@@ -4,6 +4,12 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 Integrates Couchbase into Quarkus.
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/quarkiverse/quarkus-couchbase/Build?style=for-the-badge)
+[![Version](https://img.shields.io/maven-central/v/io.quarkiverse.couchbase/quarkus-couchbase?logo=apache-maven&style=for-the-badge)](https://search.maven.org/artifact/io.quarkiverse.couchbase/quarkus-couchbase)
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/quarkiverse/quarkus-couchbase.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/quarkiverse/quarkus-couchbase/alerts/)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/quarkiverse/quarkus-couchbase.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/quarkiverse/quarkus-couchbase/context:java)
+
+
 This extension is currently in alpha status.  It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
