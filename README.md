@@ -14,18 +14,16 @@ Please try it out and provide feedback, ideas and bug reports [on Github](https:
 
 ## Usage
 Add it to your project:
-```
+```xml
 <dependency>
-  <groupId>com.couchbase</groupId>
+  <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
   <version>1.0.0-alpha.1</version>
 </dependency>
 ```
 
-(Note this will soon be updated to the new groupId of io.quarkiverse.couchbase, but it has not yet been published to Maven under this.)
-
 Provide the Couchbase configuration in `application.properties`:
-```
+```properties
 quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
@@ -33,7 +31,7 @@ quarkus.couchbase.password=password
 
 Now you can @Inject a Couchbase `Cluster` into your project:
 
-```
+```java
 @Path("/couchbase")
 public class TestCouchbaseResource {
     @Inject
