@@ -15,10 +15,11 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import com.couchbase.client.java.Cluster;
-import io.quarkus.runtime.annotations.Recorder;
-
 import java.util.function.Supplier;
+
+import com.couchbase.client.java.Cluster;
+
+import io.quarkus.runtime.annotations.Recorder;
 
 @Recorder
 public class CouchbaseRecorder {

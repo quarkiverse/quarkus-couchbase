@@ -2,13 +2,18 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>io.quarkiverse</groupId>
+    <artifactId>quarkiverse-parent</artifactId>
+    <version>9</version>
+  </parent>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase-parent</artifactId>
-  <version>1.0.0-alpha.1</version>
+  <version>999-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Couchbase Quarkus Extension - Parent</name>
   <description>Allows access to a Couchbase cluster from a Quarkus application</description>
-  <url>https://github.com/couchbaselabs/quarkus-couchbase</url>
+  <url>https://github.com/quarkiverse/quarkus-couchbase</url>
   <organization>
     <name>com.couchbase</name>
     <url>https://www.couchbase.com</url>
@@ -16,13 +21,13 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/couchbaselabs/quarkus-couchbase/issues</url>
+    <url>https://github.com/quarkiverse/quarkus-couchbase/issues</url>
   </issueManagement>
 
   <licenses>
     <license>
       <name>Apache License 2.0</name>
-      <url>https://github.com/couchbaselabs/quarkus-couchbase/blob/main/LICENSE</url>
+      <url>https://github.com/quarkiverse/quarkus-couchbase/blob/main/LICENSE</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -34,26 +39,15 @@
       <email>graham.pople@couchbase.com</email>
     </developer>
   </developers>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <scm>
-    <connection>scm:git:https://github.com/couchbaselabs/quarkus-couchbase</connection>
-    <developerConnection>scm:git:https://github.com/couchbaselabs/quarkus-couchbase</developerConnection>
-    <url>https://github.com/couchbaselabs/quarkus-couchbase</url>
+    <connection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</connection>
+    <developerConnection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</developerConnection>
+    <url>https://github.com/quarkiverse/quarkus-couchbase</url>
   </scm>
   <modules>
     <module>deployment</module>
     <module>runtime</module>
+    <module>docs</module>
   </modules>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
@@ -87,70 +81,24 @@
           <version>${quarkus.version}</version>
         </plugin>
         <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>${surefire-plugin.version}</version>
-          <configuration>
-            <systemPropertyVariables>
-              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-              <maven.home>${maven.home}</maven.home>
-              <maven.repo>${settings.localRepository}</maven.repo>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
-        <plugin>
-          <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${failsafe-plugin.version}</version>
-          <configuration>
-            <systemPropertyVariables>
-              <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
-              <maven.home>${maven.home}</maven.home>
-              <maven.repo>${settings.localRepository}</maven.repo>
-            </systemPropertyVariables>
-          </configuration>
-        </plugin>
-        <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${compiler-plugin.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-source-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>attach-sources</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-javadoc-plugin</artifactId>
-          <executions>
-            <execution>
-              <id>attach-javadocs</id>
-              <goals>
-                <goal>jar</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-gpg-plugin</artifactId>
-          <version>3.0.1</version>
-          <executions>
-            <execution>
-              <id>sign-artifacts</id>
-              <phase>verify</phase>
-              <goals>
-                <goal>sign</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
+  <profiles>
+    <profile>
+      <id>it</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>!true</value>
+        </property>
+      </activation>
+      <modules>
+        <module>integration-tests</module>
+      </modules>
+    </profile>
+  </profiles>
 </project>

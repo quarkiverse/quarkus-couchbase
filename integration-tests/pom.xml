@@ -4,8 +4,8 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>io.quarkiverse.couchbase</groupId>
-    <artifactId>couchbase-quarkus-extension-parent</artifactId>
-    <version>1.0.0</version>
+    <artifactId>quarkus-couchbase-parent</artifactId>
+    <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>couchbase-quarkus-extension-integration-tests</artifactId>
   <name>Couchbase Quarkus Extension - Integration Tests</name>
@@ -16,7 +16,7 @@
     </dependency>
     <dependency>
       <groupId>io.quarkiverse.couchbase</groupId>
-      <artifactId>couchbase-quarkus-extension</artifactId>
+      <artifactId>quarkus-couchbase</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
