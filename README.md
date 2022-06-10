@@ -7,7 +7,7 @@ This extension is currently in alpha status.  It supports:
 - Configuring the Cluster through `application.properties`.  Currently a minimal set of configuration options is provided.
 - Graal/native-image, though so far it has been minimally tested with basic cases.
 
-Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/couchbaselabs/quarkus-couchbase/issues).
+Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
 
 ## Usage
 Add it to your project:
@@ -18,6 +18,8 @@ Add it to your project:
   <version>1.0.0-alpha.1</version>
 </dependency>
 ```
+
+(Note this will soon be updated to the new groupId of io.quarkiverse.couchbase, but it has not yet been published to Maven under this.)
 
 Provide the Couchbase configuration in `application.properties`:
 ```
@@ -66,11 +68,3 @@ And test http://localhost:8080/couchbase/test.
 ## Limitations
 In this early alpha release the configuration options are limited to the three shown above.  
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
-
-## Releasing
-It can be released to Sonatype with:
-```
-mvn deploy
-mvn gpg:sign-and-deploy-file -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ -DrepositoryId=ossrh -DpomFile=pom.xml -Dfile=pom.xml -Dpackaging=pom
-```
-This is after performing the necessary Sonatype and GPG initialisation.
