@@ -13,7 +13,7 @@
   <packaging>pom</packaging>
   <name>Couchbase Quarkus Extension - Parent</name>
   <description>Allows access to a Couchbase cluster from a Quarkus application</description>
-  <url>https://github.com/couchbaselabs/quarkus-couchbase</url>
+  <url>https://github.com/quarkiverse/quarkus-couchbase</url>
   <organization>
     <name>com.couchbase</name>
     <url>https://www.couchbase.com</url>
@@ -21,13 +21,13 @@
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/couchbaselabs/quarkus-couchbase/issues</url>
+    <url>https://github.com/quarkiverse/quarkus-couchbase/issues</url>
   </issueManagement>
 
   <licenses>
     <license>
       <name>Apache License 2.0</name>
-      <url>https://github.com/couchbaselabs/quarkus-couchbase/blob/main/LICENSE</url>
+      <url>https://github.com/quarkiverse/quarkus-couchbase/blob/main/LICENSE</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -39,22 +39,10 @@
       <email>graham.pople@couchbase.com</email>
     </developer>
   </developers>
-
-  <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
-
   <scm>
-    <connection>scm:git:https://github.com/couchbaselabs/quarkus-couchbase</connection>
-    <developerConnection>scm:git:https://github.com/couchbaselabs/quarkus-couchbase</developerConnection>
-    <url>https://github.com/couchbaselabs/quarkus-couchbase</url>
+    <connection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</connection>
+    <developerConnection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</developerConnection>
+    <url>https://github.com/quarkiverse/quarkus-couchbase</url>
   </scm>
   <modules>
     <module>deployment</module>
