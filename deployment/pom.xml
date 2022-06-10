@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.couchbase</groupId>
+    <groupId>io.quarkiverse.couchbase</groupId>
     <artifactId>quarkus-couchbase-parent</artifactId>
     <version>1.0.0-alpha.1</version>
   </parent>
@@ -15,7 +15,7 @@
       <artifactId>quarkus-arc-deployment</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.couchbase</groupId>
+      <groupId>io.quarkiverse.couchbase</groupId>
       <artifactId>quarkus-couchbase</artifactId>
       <version>${project.version}</version>
     </dependency>

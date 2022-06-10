@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.couchbase</groupId>
+    <groupId>io.quarkiverse.couchbase</groupId>
     <artifactId>couchbase-quarkus-extension-parent</artifactId>
     <version>1.0.0</version>
   </parent>
@@ -15,7 +15,7 @@
       <artifactId>quarkus-resteasy</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.couchbase</groupId>
+      <groupId>io.quarkiverse.couchbase</groupId>
       <artifactId>couchbase-quarkus-extension</artifactId>
       <version>${project.version}</version>
     </dependency>
