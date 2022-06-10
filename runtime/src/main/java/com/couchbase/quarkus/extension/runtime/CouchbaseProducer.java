@@ -15,9 +15,9 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import com.couchbase.client.java.Cluster;
-
 import javax.enterprise.inject.Produces;
+
+import com.couchbase.client.java.Cluster;
 
 public class CouchbaseProducer {
     private CouchbaseConfig config;
