@@ -40,8 +40,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</connection>
-    <developerConnection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</developerConnection>
+    <connection>scm:git:git@github.com:quarkiverse/quarkus-couchbase.git</connection>
+    <developerConnection>scm:git:git@github.com:quarkiverse/quarkus-couchbase.git</developerConnection>
     <url>https://github.com/quarkiverse/quarkus-couchbase</url>
   </scm>
   <modules>
