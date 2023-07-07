@@ -1,5 +1,5 @@
 name: quarkus-couchbase
-title: Quarkus Couchbase
+title: Couchbase
 version: dev
 nav:
   - modules/ROOT/nav.adoc
