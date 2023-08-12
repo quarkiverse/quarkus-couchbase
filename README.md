@@ -15,6 +15,7 @@ This extension is currently in alpha status.  It supports:
 - Dependency injecting a Couchbase `Cluster`.
 - Configuring the Cluster through `application.properties`.  Currently a minimal set of configuration options is provided.
 - Graal/native-image, though so far it has been minimally tested with basic cases.
+- A dev service that starts a Couchbase server in a Docker container. With this you can develop your Quarkus app without having to install Couchbase on your machine.
 
 Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
 
