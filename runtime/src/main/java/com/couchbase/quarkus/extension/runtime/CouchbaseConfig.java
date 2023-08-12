@@ -15,6 +15,7 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
+import java.util.List;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
@@ -38,4 +39,10 @@ public final class CouchbaseConfig {
      */
     @ConfigItem
     public String password;
+    /**
+     * The version of the Couchbase server to connect to during the dev/test phase as dev service.
+     * Default is latest, see https://hub.docker.com/_/couchbase for available versions.
+     */
+    @ConfigItem(defaultValue = "latest")
+    public String version;
 }

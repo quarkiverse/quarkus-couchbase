@@ -29,18 +29,24 @@ public class CouchbaseDevService {
   @BuildStep
   List<DevServicesResultBuildItem> startCouchBase(
       CuratedApplicationShutdownBuildItem closeBuildItem) {
-    String userName = ConfigProvider.getConfig()
-        .getOptionalValue("quarkus.couchbase.username", String.class).orElse("Administrator");;
-    String password = ConfigProvider.getConfig()
-        .getOptionalValue("quarkus.couchbase.password", String.class).orElse("password");
-    QuarkusCouchbaseContainer couchbase =
-        new QuarkusCouchbaseContainer("latest", userName, password);
-    couchbase.start();
+    QuarkusCouchbaseContainer couchbase = startContainer();
     devServices.add(new RunningDevService(CouchbaseQuarkusExtensionProcessor.FEATURE,
         couchbase.getContainerId(), couchbase::close, Map.of()));
     closeBuildItem.addCloseTask(couchbase::close, true);
     return devServices.stream().map(RunningDevService::toBuildItem).collect(Collectors.toList());
 
+  }
+
+  private QuarkusCouchbaseContainer startContainer() {
+    String userName = ConfigProvider.getConfig()
+        .getOptionalValue("quarkus.couchbase.username", String.class).orElse("Administrator");;
+    String password = ConfigProvider.getConfig()
+        .getOptionalValue("quarkus.couchbase.password", String.class).orElse("password");
+    String version = ConfigProvider.getConfig().getValue("quarkus.couchbase.version", String.class);
+    QuarkusCouchbaseContainer couchbase =
+        new QuarkusCouchbaseContainer(version, userName, password);
+    couchbase.start();
+    return couchbase;
   }
 
   /**
@@ -66,12 +72,11 @@ public class CouchbaseDevService {
     private static final int KV_PORT = 11210;
     private static final int KV_SSL_PORT = 11207;
 
-    
+
     public QuarkusCouchbaseContainer(String version, String userName, String password) {
       super("couchbase/server:" + version);
       withCredentials(userName, password);
       // we enable all non-enterprise services because we don't know which ones are needed
-
       withEnabledServices(CouchbaseService.EVENTING, CouchbaseService.INDEX, CouchbaseService.KV,
           CouchbaseService.QUERY, CouchbaseService.SEARCH);
       addFixedExposedPort(MGMT_PORT, MGMT_PORT);
@@ -89,7 +94,6 @@ public class CouchbaseDevService {
       addFixedExposedPort(EVENTING_SSL_PORT, EVENTING_SSL_PORT);
       addFixedExposedPort(KV_PORT, KV_PORT);
       addFixedExposedPort(KV_SSL_PORT, KV_SSL_PORT);
-      // Link the stackoverflow issue that explains why we need should use 5 here. There is some flankiness in the startup.
     }
   }
 }
