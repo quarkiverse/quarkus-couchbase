@@ -8,14 +8,19 @@ import java.util.stream.Collectors;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.couchbase.CouchbaseService;
+import io.quarkus.deployment.IsNormal;
 import io.quarkus.deployment.annotations.BuildStep;
+import io.quarkus.deployment.annotations.BuildSteps;
 import io.quarkus.deployment.builditem.CuratedApplicationShutdownBuildItem;
 import io.quarkus.deployment.builditem.DevServicesResultBuildItem;
 import io.quarkus.deployment.builditem.DevServicesResultBuildItem.RunningDevService;
+import io.quarkus.deployment.dev.devservices.GlobalDevServicesConfig;
 
 /**
  * This class provides a Quarkus DevService for Couchbase. The dev service provides all non enterprise features of Couchbase.
  */
+@BuildSteps(onlyIfNot = IsNormal.class, onlyIf = GlobalDevServicesConfig.Enabled.class)
+
 public class CouchbaseDevService {
 
 
@@ -61,6 +66,7 @@ public class CouchbaseDevService {
     private static final int KV_PORT = 11210;
     private static final int KV_SSL_PORT = 11207;
 
+    
     public QuarkusCouchbaseContainer(String version, String userName, String password) {
       super("couchbase/server:" + version);
       withCredentials(userName, password);
