@@ -15,7 +15,6 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import java.util.List;
 import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
