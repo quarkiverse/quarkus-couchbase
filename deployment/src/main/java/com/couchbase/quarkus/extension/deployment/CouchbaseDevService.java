@@ -40,7 +40,6 @@ public class CouchbaseDevService {
     private QuarkusCouchbaseContainer startContainer() {
         String userName = ConfigProvider.getConfig()
                 .getOptionalValue("quarkus.couchbase.username", String.class).orElse("Administrator");
-        ;
         String password = ConfigProvider.getConfig()
                 .getOptionalValue("quarkus.couchbase.password", String.class).orElse("password");
         String version = ConfigProvider.getConfig().getValue("quarkus.couchbase.version", String.class);
