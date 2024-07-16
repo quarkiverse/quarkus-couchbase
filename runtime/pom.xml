@@ -19,6 +19,15 @@
       <artifactId>java-client</artifactId>
       <version>3.7.1</version>
     </dependency>
+    <!-- Local unshaded java client jar -->
+<!--    <dependency>-->
+<!--      <groupId>com.couchbase.client</groupId>-->
+<!--      <artifactId>java-client</artifactId>-->
+<!--      <version>3.7.1</version>-->
+<!--      <scope>system</scope>-->
+<!--      <systemPath>${project.basedir}/java-client-embev-3.7.1-SNAPSHOT.jar</systemPath>-->
+<!--    </dependency>-->
+
   </dependencies>
   <build>
     <plugins>

@@ -39,6 +39,7 @@ public class DevServiceTest {
     void insertDocument() {
         // this is an adapted example from the couchbase doc and licensed under their terms.
         //TODO: what license is this under?
+
         String bucketName = "travel-sample";
         cluster.buckets().createBucket(BucketSettings.create(bucketName));
         // get a bucket reference

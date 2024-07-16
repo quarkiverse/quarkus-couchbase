@@ -15,20 +15,20 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 import com.couchbase.client.java.Cluster;
 
 public class CouchbaseProducer {
     private CouchbaseConfig config;
 
-    void setConfig(CouchbaseConfig config) {
-        System.out.println("CouchbaseProducer - setting config");
-        this.config = config;
-    }
+    //    void setConfig(CouchbaseConfig config) {
+    //        System.out.println("CouchbaseProducer - setting config");
+    //        this.config = config;
+    //    }
 
     @Produces
-    public Cluster produceCluster() throws Exception {
+    public Cluster produceCluster() {
         return Cluster.connect(config.connectionString, config.username, config.password);
     }
 

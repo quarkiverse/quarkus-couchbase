@@ -15,23 +15,21 @@
  */
 package com.couchbase.quarkus.extension.deployment;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import com.couchbase.client.java.Cluster;
 import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
 import com.couchbase.quarkus.extension.runtime.CouchbaseRecorder;
 
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
-import io.quarkus.deployment.annotations.BuildProducer;
-import io.quarkus.deployment.annotations.BuildStep;
-import io.quarkus.deployment.annotations.ExecutionTime;
+import io.quarkus.deployment.annotations.*;
 import io.quarkus.deployment.annotations.Record;
 
 public class CouchbaseProcessor {
 
-    @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
-    public void produceCouchbaseClient(CouchbaseRecorder recorder,
+    @BuildStep
+    public void produceCouchbaseClientBean(CouchbaseRecorder recorder,
             CouchbaseConfig config,
             BuildProducer<SyntheticBeanBuildItem> syntheticBeans) {
         syntheticBeans.produce(SyntheticBeanBuildItem
@@ -43,5 +41,11 @@ public class CouchbaseProcessor {
                 .done());
 
     }
+
+    //        @BuildStep
+    //        void runtimeInitializedClasses(BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitializedClasses) {
+    //            runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem(Cluster.class.getName()));
+    //            runtimeInitializedClasses.produce(new RuntimeInitializedClassBuildItem("com.couchbase.internal.dns.DefaultDnsResolver"));
+    //        }
 
 }
