@@ -3,6 +3,7 @@ package com.couchbase.quarkus.extension.deployment.nettyhandling;
 import java.util.function.Supplier;
 
 import com.couchbase.client.core.deps.io.netty.channel.EventLoopGroup;
+
 import io.quarkus.builder.item.SimpleBuildItem;
 
 /**

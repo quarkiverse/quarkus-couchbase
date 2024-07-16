@@ -19,6 +19,11 @@
       <artifactId>java-client</artifactId>
       <version>3.7.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.graalvm.sdk</groupId>
+      <artifactId>nativeimage</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <!-- Local unshaded java client jar -->
 <!--    <dependency>-->
 <!--      <groupId>com.couchbase.client</groupId>-->

@@ -17,7 +17,6 @@ package com.couchbase.quarkus.extension.deployment;
 
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.builditem.FeatureBuildItem;
-import io.quarkus.deployment.builditem.IndexDependencyBuildItem;
 
 class CouchbaseQuarkusExtensionProcessor {
     public static final String FEATURE = "quarkus-couchbase";
@@ -25,10 +24,5 @@ class CouchbaseQuarkusExtensionProcessor {
     @BuildStep
     FeatureBuildItem feature() {
         return new FeatureBuildItem(FEATURE);
-    }
-
-    @BuildStep
-    IndexDependencyBuildItem indexExternalDependency() {
-        return new IndexDependencyBuildItem("my.group.id", "my-artifact-id");
     }
 }

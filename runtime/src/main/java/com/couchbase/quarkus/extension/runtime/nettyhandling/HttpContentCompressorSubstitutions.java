@@ -9,7 +9,7 @@ import com.oracle.svm.core.annotate.TargetClass;
 
 public class HttpContentCompressorSubstitutions {
 
-    @TargetClass(className = "io.netty.handler.codec.compression.ZstdEncoder", onlyWith = IsZstdAbsent.class)
+    @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdEncoder", onlyWith = IsZstdAbsent.class)
     public static final class ZstdEncoderFactorySubstitution {
 
         @Substitute
@@ -29,7 +29,7 @@ public class HttpContentCompressorSubstitutions {
     }
 
     @Substitute
-    @TargetClass(className = "io.netty.handler.codec.compression.ZstdConstants", onlyWith = IsZstdAbsent.class)
+    @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdConstants", onlyWith = IsZstdAbsent.class)
     public static final class ZstdConstants {
 
         // The constants make <clinit> calls to com.github.luben.zstd.Zstd so we cut links with that substitution.
