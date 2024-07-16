@@ -13,15 +13,15 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package io.quarkus.netty.runtime.virtual;
+package com.couchbase.quarkus.extension.runtime.nettyhandling.virtual;
 
 import java.net.SocketAddress;
 import java.util.concurrent.ConcurrentMap;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelException;
-import io.netty.util.internal.PlatformDependent;
-import io.netty.util.internal.StringUtil;
+import com.couchbase.client.core.deps.io.netty.channel.Channel;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelException;
+import com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent;
+import com.couchbase.client.core.deps.io.netty.util.internal.StringUtil;
 
 final class VirtualChannelRegistry {
 

@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package io.quarkus.netty.runtime.virtual;
+package com.couchbase.quarkus.extension.runtime.nettyhandling.virtual;
 
 import java.net.SocketAddress;
 import java.nio.channels.AlreadyConnectedException;
@@ -23,25 +23,25 @@ import java.nio.channels.NotYetConnectedException;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
-import io.netty.channel.AbstractChannel;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelConfig;
-import io.netty.channel.ChannelMetadata;
-import io.netty.channel.ChannelOutboundBuffer;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelPromise;
-import io.netty.channel.DefaultChannelConfig;
-import io.netty.channel.EventLoop;
-import io.netty.channel.PreferHeapByteBufAllocator;
-import io.netty.channel.RecvByteBufAllocator;
-import io.netty.channel.SingleThreadEventLoop;
-import io.netty.util.ReferenceCountUtil;
-import io.netty.util.concurrent.Future;
-import io.netty.util.concurrent.SingleThreadEventExecutor;
-import io.netty.util.internal.InternalThreadLocalMap;
-import io.netty.util.internal.PlatformDependent;
-import io.netty.util.internal.logging.InternalLogger;
-import io.netty.util.internal.logging.InternalLoggerFactory;
+import com.couchbase.client.core.deps.io.netty.channel.AbstractChannel;
+import com.couchbase.client.core.deps.io.netty.channel.Channel;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelConfig;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelMetadata;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelOutboundBuffer;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelPipeline;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelPromise;
+import com.couchbase.client.core.deps.io.netty.channel.DefaultChannelConfig;
+import com.couchbase.client.core.deps.io.netty.channel.EventLoop;
+import com.couchbase.client.core.deps.io.netty.channel.PreferHeapByteBufAllocator;
+import com.couchbase.client.core.deps.io.netty.channel.RecvByteBufAllocator;
+import com.couchbase.client.core.deps.io.netty.channel.SingleThreadEventLoop;
+import com.couchbase.client.core.deps.io.netty.util.ReferenceCountUtil;
+import com.couchbase.client.core.deps.io.netty.util.concurrent.Future;
+import com.couchbase.client.core.deps.io.netty.util.concurrent.SingleThreadEventExecutor;
+import com.couchbase.client.core.deps.io.netty.util.internal.InternalThreadLocalMap;
+import com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent;
+import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLogger;
+import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
 
 /**
  * A {@link Channel} for the local transport. This is a bit different from a LocalChannel in regular Netty

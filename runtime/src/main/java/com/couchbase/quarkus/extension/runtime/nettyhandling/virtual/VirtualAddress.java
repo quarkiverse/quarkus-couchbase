@@ -13,11 +13,11 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package io.quarkus.netty.runtime.virtual;
+package com.couchbase.quarkus.extension.runtime.nettyhandling.virtual;
 
 import java.net.SocketAddress;
 
-import io.netty.channel.Channel;
+import com.couchbase.client.core.deps.io.netty.channel.Channel;
 
 /**
  * An endpoint in the local transport. Each endpoint is identified by a unique

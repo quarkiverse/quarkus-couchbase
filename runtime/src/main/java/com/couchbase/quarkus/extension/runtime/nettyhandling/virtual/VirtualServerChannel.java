@@ -13,22 +13,22 @@
  * License for the specific language governing permissions and limitations
  * under the License.
  */
-package io.quarkus.netty.runtime.virtual;
+package com.couchbase.quarkus.extension.runtime.nettyhandling.virtual;
 
 import java.net.SocketAddress;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import io.netty.channel.AbstractServerChannel;
-import io.netty.channel.ChannelConfig;
-import io.netty.channel.ChannelPipeline;
-import io.netty.channel.DefaultChannelConfig;
-import io.netty.channel.EventLoop;
-import io.netty.channel.PreferHeapByteBufAllocator;
-import io.netty.channel.RecvByteBufAllocator;
-import io.netty.channel.ServerChannel;
-import io.netty.channel.SingleThreadEventLoop;
-import io.netty.util.concurrent.SingleThreadEventExecutor;
+import com.couchbase.client.core.deps.io.netty.channel.AbstractServerChannel;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelConfig;
+import com.couchbase.client.core.deps.io.netty.channel.ChannelPipeline;
+import com.couchbase.client.core.deps.io.netty.channel.DefaultChannelConfig;
+import com.couchbase.client.core.deps.io.netty.channel.EventLoop;
+import com.couchbase.client.core.deps.io.netty.channel.PreferHeapByteBufAllocator;
+import com.couchbase.client.core.deps.io.netty.channel.RecvByteBufAllocator;
+import com.couchbase.client.core.deps.io.netty.channel.ServerChannel;
+import com.couchbase.client.core.deps.io.netty.channel.SingleThreadEventLoop;
+import com.couchbase.client.core.deps.io.netty.util.concurrent.SingleThreadEventExecutor;
 
 /**
  * A {@link ServerChannel} for the local transport which allows in VM communication.

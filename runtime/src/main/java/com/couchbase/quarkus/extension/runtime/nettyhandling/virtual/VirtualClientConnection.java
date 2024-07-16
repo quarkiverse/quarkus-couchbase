@@ -1,10 +1,10 @@
-package io.quarkus.netty.runtime.virtual;
+package com.couchbase.quarkus.extension.runtime.nettyhandling.virtual;
 
 import java.net.SocketAddress;
 
-import io.netty.channel.Channel;
-import io.netty.util.concurrent.Future;
-import io.netty.util.internal.PlatformDependent;
+import com.couchbase.client.core.deps.io.netty.channel.Channel;
+import com.couchbase.client.core.deps.io.netty.util.concurrent.Future;
+import com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent;
 
 /**
  * A virtual client connection to an intra-JVM request/response netty server channel.
