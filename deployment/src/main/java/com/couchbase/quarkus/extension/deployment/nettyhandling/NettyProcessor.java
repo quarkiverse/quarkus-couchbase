@@ -1,10 +1,6 @@
 package com.couchbase.quarkus.extension.deployment.nettyhandling;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Supplier;
 
 import jakarta.inject.Singleton;
@@ -139,6 +135,20 @@ class NettyProcessor {
                             "com.couchbase.client.core.deps.io.netty.handler.codec.compression.BrotliOptions");
         } else {
             log.debug("Not registering Netty HTTP classes as they were not found");
+        }
+
+        //TODO: TEST
+        if (QuarkusClassLoader.isClassPresentAtRuntime("java.net.NetworkInterface")) {
+            builder.addRuntimeInitializedClass(" com.couchbase.client.core.deps.io.netty.util.NetUtil");
+            builder.addRuntimeInitializedClass(
+                    "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilNetworkInterfacesLazyHolder");
+
+        }
+
+        //TODO: TEST 2
+        if (QuarkusClassLoader.isClassPresentAtRuntime("java.security.SecureRandom")) {
+            builder.addRuntimeInitializedClass(
+                    "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider$InnerWindowsResolverConfigProvider");
         }
 
         if (QuarkusClassLoader

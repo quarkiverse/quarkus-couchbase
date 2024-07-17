@@ -24,7 +24,11 @@
       <artifactId>nativeimage</artifactId>
       <scope>provided</scope>
     </dependency>
-    <!-- Local unshaded java client jar -->
+      <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-builder</artifactId>
+      </dependency>
+      <!-- Local unshaded java client jar -->
 <!--    <dependency>-->
 <!--      <groupId>com.couchbase.client</groupId>-->
 <!--      <artifactId>java-client</artifactId>-->
