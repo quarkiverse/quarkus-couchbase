@@ -138,12 +138,12 @@ class NettyProcessor {
         }
 
         //TODO: TEST
-        if (QuarkusClassLoader.isClassPresentAtRuntime("java.net.NetworkInterface")) {
-            builder.addRuntimeInitializedClass(" com.couchbase.client.core.deps.io.netty.util.NetUtil");
-            builder.addRuntimeInitializedClass(
-                    "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilNetworkInterfacesLazyHolder");
-
-        }
+        //        if (QuarkusClassLoader.isClassPresentAtRuntime("java.net.NetworkInterface")) {
+        //            builder.addRuntimeInitializedClass(" com.couchbase.client.core.deps.io.netty.util.NetUtil");
+        //            builder.addRuntimeInitializedClass(
+        //                    "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilNetworkInterfacesLazyHolder");
+        //
+        //        }
 
         //TODO: TEST 2
         if (QuarkusClassLoader.isClassPresentAtRuntime("java.security.SecureRandom")) {
