@@ -391,7 +391,7 @@ final class Target_io_netty_channel_nio_NioEventLoop {
 final class Target_io_netty_buffer_AbstractReferenceCountedByteBuf {
 
     @Alias
-    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.FieldOffset, name = "refCnt")
+    @RecomputeFieldValue(kind = Kind.FieldOffset, name = "refCnt")
     private static long REFCNT_FIELD_OFFSET;
 }
 
@@ -399,7 +399,7 @@ final class Target_io_netty_buffer_AbstractReferenceCountedByteBuf {
 final class Target_io_netty_util_AbstractReferenceCounted {
 
     @Alias
-    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.FieldOffset, name = "refCnt")
+    @RecomputeFieldValue(kind = Kind.FieldOffset, name = "refCnt")
     private static long REFCNT_FIELD_OFFSET;
 }
 
@@ -452,11 +452,11 @@ final class Target_io_netty_util_internal_NativeLibraryLoader {
 final class Target_io_netty_buffer_EmptyByteBuf {
 
     @Alias
-    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.Reset)
+    @RecomputeFieldValue(kind = Kind.Reset)
     private static ByteBuffer EMPTY_BYTE_BUFFER;
 
     @Alias
-    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.Reset)
+    @RecomputeFieldValue(kind = Kind.Reset)
     private static long EMPTY_BYTE_BUFFER_ADDRESS;
 
     @Substitute

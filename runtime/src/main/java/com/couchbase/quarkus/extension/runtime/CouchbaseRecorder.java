@@ -18,6 +18,7 @@ package com.couchbase.quarkus.extension.runtime;
 import java.util.function.Supplier;
 
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.ClusterOptions;
 
 import io.quarkus.runtime.annotations.Recorder;
 
@@ -26,5 +27,9 @@ public class CouchbaseRecorder {
 
     public Supplier<Cluster> getCluster(CouchbaseConfig config) {
         return () -> Cluster.connect(config.connectionString, config.username, config.password);
+    }
+
+    public Supplier<Cluster> getCluster(CouchbaseConfig config, ClusterOptions clusterOptions) {
+        return () -> Cluster.connect(config.connectionString, clusterOptions);
     }
 }

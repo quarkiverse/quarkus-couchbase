@@ -35,16 +35,17 @@ import com.couchbase.client.core.deps.com.fasterxml.jackson.databind.annotation.
 import com.couchbase.client.core.deps.com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.couchbase.client.core.deps.com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
 import com.couchbase.client.core.deps.com.fasterxml.jackson.databind.module.SimpleModule;
-//import com.couchbase.quarkus.extension.runtime.jacksonhandling.VertxHybridPoolObjectMapperCustomizer;
-import com.couchbase.quarkus.extension.runtime.jacksonhandling.ClassPathJacksonModuleBuildItem;
+import com.couchbase.quarkus.extension.runtime.jacksonhandling.ConfigurationCustomizer;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.JacksonBuildTimeConfig;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.JacksonMixin;
-import com.couchbase.quarkus.extension.runtime.jacksonhandling.JacksonModuleBuildItem;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.JacksonSupport;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.JacksonSupportRecorder;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.MixinsRecorder;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.ObjectMapperCustomizer;
 import com.couchbase.quarkus.extension.runtime.jacksonhandling.ObjectMapperProducer;
+import com.couchbase.quarkus.extension.runtime.jacksonhandling.VertxHybridPoolObjectMapperCustomizer;
+import com.couchbase.quarkus.extension.runtime.jacksonhandling.spi.ClassPathJacksonModuleBuildItem;
+import com.couchbase.quarkus.extension.runtime.jacksonhandling.spi.JacksonModuleBuildItem;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.SimpleObjectIdResolver;
@@ -53,8 +54,11 @@ import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanBuildItem;
 import io.quarkus.arc.deployment.GeneratedBeanGizmoAdaptor;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.arc.impl.Reflections;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
+import io.quarkus.deployment.Capabilities;
+import io.quarkus.deployment.Capability;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -107,16 +111,16 @@ public class JacksonProcessor {
     @Inject
     List<IgnoreJsonDeserializeClassBuildItem> ignoreJsonDeserializeClassBuildItems;
 
-    //    @BuildStep
-    //    void unremovable(Capabilities capabilities, BuildProducer<UnremovableBeanBuildItem> producer,
-    //            BuildProducer<AdditionalBeanBuildItem> additionalProducer) {
-    //        additionalProducer.produce(AdditionalBeanBuildItem.unremovableOf(ConfigurationCustomizer.class));
-    //
-    //        if (capabilities.isPresent(Capability.VERTX_CORE)) {
-    //            producer.produce(UnremovableBeanBuildItem.beanTypes(ObjectMapper.class));
-    //            additionalProducer.produce(AdditionalBeanBuildItem.unremovableOf(VertxHybridPoolObjectMapperCustomizer.class));
-    //        }
-    //    }
+    @BuildStep
+    void unremovable(Capabilities capabilities, BuildProducer<UnremovableBeanBuildItem> producer,
+            BuildProducer<AdditionalBeanBuildItem> additionalProducer) {
+        additionalProducer.produce(AdditionalBeanBuildItem.unremovableOf(ConfigurationCustomizer.class));
+
+        if (capabilities.isPresent(Capability.VERTX_CORE)) {
+            producer.produce(UnremovableBeanBuildItem.beanTypes(ObjectMapper.class));
+            additionalProducer.produce(AdditionalBeanBuildItem.unremovableOf(VertxHybridPoolObjectMapperCustomizer.class));
+        }
+    }
 
     @BuildStep
     void register(

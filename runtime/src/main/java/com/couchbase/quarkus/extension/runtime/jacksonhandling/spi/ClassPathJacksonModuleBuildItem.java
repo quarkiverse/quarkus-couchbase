@@ -1,4 +1,4 @@
-package com.couchbase.quarkus.extension.runtime.jacksonhandling;
+package com.couchbase.quarkus.extension.runtime.jacksonhandling.spi;
 
 import io.quarkus.builder.item.MultiBuildItem;
 

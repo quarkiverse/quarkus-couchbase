@@ -146,10 +146,10 @@ class NettyProcessor {
         //        }
 
         //TODO: TEST 2
-        if (QuarkusClassLoader.isClassPresentAtRuntime("java.security.SecureRandom")) {
-            builder.addRuntimeInitializedClass(
-                    "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider$InnerWindowsResolverConfigProvider");
-        }
+        //        if (QuarkusClassLoader.isClassPresentAtRuntime("java.security.SecureRandom")) {
+        //            builder.addRuntimeInitializedClass(
+        //                    "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider$InnerWindowsResolverConfigProvider");
+        //        }
 
         if (QuarkusClassLoader
                 .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")) {

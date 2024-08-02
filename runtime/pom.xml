@@ -24,19 +24,19 @@
       <artifactId>nativeimage</artifactId>
       <scope>provided</scope>
     </dependency>
-      <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-builder</artifactId>
-      </dependency>
-      <!-- Local unshaded java client jar -->
-<!--    <dependency>-->
-<!--      <groupId>com.couchbase.client</groupId>-->
-<!--      <artifactId>java-client</artifactId>-->
-<!--      <version>3.7.1</version>-->
-<!--      <scope>system</scope>-->
-<!--      <systemPath>${project.basedir}/java-client-embev-3.7.1-SNAPSHOT.jar</systemPath>-->
-<!--    </dependency>-->
-
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-builder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.enterprise</groupId>
+      <artifactId>jakarta.enterprise.cdi-api</artifactId>
+      <version>4.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
