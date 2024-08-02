@@ -19,6 +19,10 @@ This extension is currently in alpha status.  It supports:
 
 Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
 
+## Native Image
+There are known native build issues with GraalVM 17. 
+It is recommended to use native image with Mandrel 24.0.2.r22, or Graal 22.0.2 (or latest for both).
+
 ## Usage
 Add it to your project:
 ```xml
@@ -35,6 +39,11 @@ quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
 ```
+Add 
+```properties
+quarkus.devservices.enabled=false
+```
+To disable TestContainers.
 
 Now you can @Inject a Couchbase `Cluster` into your project:
 
