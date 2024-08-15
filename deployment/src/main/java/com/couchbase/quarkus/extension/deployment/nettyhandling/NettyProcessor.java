@@ -137,20 +137,6 @@ class NettyProcessor {
             log.debug("Not registering Netty HTTP classes as they were not found");
         }
 
-        //TODO: TEST
-        //        if (QuarkusClassLoader.isClassPresentAtRuntime("java.net.NetworkInterface")) {
-        //            builder.addRuntimeInitializedClass(" com.couchbase.client.core.deps.io.netty.util.NetUtil");
-        //            builder.addRuntimeInitializedClass(
-        //                    "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilNetworkInterfacesLazyHolder");
-        //
-        //        }
-
-        //TODO: TEST 2
-        //        if (QuarkusClassLoader.isClassPresentAtRuntime("java.security.SecureRandom")) {
-        //            builder.addRuntimeInitializedClass(
-        //                    "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider$InnerWindowsResolverConfigProvider");
-        //        }
-
         if (QuarkusClassLoader
                 .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")) {
             builder

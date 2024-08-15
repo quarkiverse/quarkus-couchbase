@@ -38,6 +38,11 @@
       <name>Graham Pople</name>
       <email>graham.pople@couchbase.com</email>
     </developer>
+    <developer>
+      <id>emilienbev</id>
+      <name>Emilien Bevierre</name>
+      <email>emilien.bevierre@couchbase.com</email>
+    </developer>
   </developers>
   <scm>
     <connection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</connection>
@@ -59,6 +64,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <quarkus.version>3.12.3</quarkus.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
+    <!--  Careful about updating this. Newer versions of the SDK may not compile natively.  -->
     <couchbase.client.version>3.7.1</couchbase.client.version>
   </properties>
   <dependencyManagement>
