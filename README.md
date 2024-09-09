@@ -9,7 +9,6 @@ Integrates Couchbase into Quarkus.
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/quarkiverse/quarkus-couchbase.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/quarkiverse/quarkus-couchbase/alerts/)
 [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/quarkiverse/quarkus-couchbase.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/quarkiverse/quarkus-couchbase/context:java)
 
-
 This extension is currently in alpha status.  It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
@@ -85,6 +84,14 @@ And test http://localhost:8080/couchbase/test.
 ## Limitations
 In this early alpha release the configuration options are limited to the three shown above.  
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
+
+## License
+All the files under `nettyhandling` and `jacksonhandling` directories, both in the `runtime` and `deployment` modules are
+taken as-were or modified from the official [netty](https://github.com/quarkusio/quarkus/tree/main/extensions/netty) and
+[jackson](https://github.com/quarkusio/quarkus/tree/main/extensions/jackson) extensions.
+
+Any copyright notice present in the original files were copied over, and a generic Apache License notice was
+added to those without. Couchbase does not intend copyright infringement or claim ownership over these files or their content.
 
 ## Contributors ✨
 
