@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2024 Couchbase, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.couchbase.quarkus.extension.runtime.nettyhandling;
 
 import static com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues.DEFLATE;
@@ -9,18 +24,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.Provider;
+import java.security.*;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.BooleanSupplier;
 
@@ -44,15 +51,8 @@ import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibCod
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibWrapper;
 import com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues;
 import com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2Exception;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.ApplicationProtocolConfig;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.*;
 import com.couchbase.client.core.deps.io.netty.handler.ssl.ApplicationProtocolConfig.SelectorFailureBehavior;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.CipherSuiteFilter;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.ClientAuth;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.JdkAlpnApplicationProtocolNegotiator;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.JdkApplicationProtocolNegotiator;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.SslContext;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.SslContextOption;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.SslProvider;
 import com.couchbase.client.core.deps.io.netty.util.concurrent.GlobalEventExecutor;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.JdkLoggerFactory;
@@ -172,6 +172,7 @@ final class Target_io_netty_handler_ssl_JdkSslServerContext {
     }
 }
 
+//TODO:
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
 final class Target_io_netty_handler_ssl_JdkSslClientContext {
 
@@ -217,6 +218,7 @@ final class Target_io_netty_handler_ssl_JdkAlpnSslEngine {
     }
 }
 
+//TODO:
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.SslContext")
 final class Target_io_netty_handler_ssl_SslContext {
 
@@ -238,6 +240,7 @@ final class Target_io_netty_handler_ssl_SslContext {
                 clientAuth, protocols, startTls, keyStoreType);
     }
 
+    //TODO:
     @Substitute
     static SslContext newClientContextInternal(SslProvider provider, Provider sslContextProvider,
             X509Certificate[] trustCert,
