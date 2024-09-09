@@ -13,15 +13,16 @@ Integrates Couchbase into Quarkus.
 This extension is currently in alpha status.  It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
-- Configuring the Cluster through `application.properties`.  Currently a minimal set of configuration options is provided.
-- Graal/native-image, though so far it has been minimally tested with basic cases.
+- Configuring the Cluster through `application.properties`.  Currently, a minimal set of configuration options is provided.
+- Mandrel/GraalVM/native-image.
 - A dev service that starts a Couchbase server in a Docker container. With this you can develop your Quarkus app without having to install Couchbase on your machine.
 
 Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
 
 ## Native Image
-There are known native build issues with GraalVM 17. 
-It is recommended to use native image with Mandrel 24.0.2.r22, or Graal 22.0.2 (or latest for both).
+The extension supports native mode and has been tested with Mandrel 24.0.2.r22 and Graal 22.0.2.
+
+It is recommended to use these versions or the latest for both.
 
 ## Usage
 Add it to your project:
@@ -39,11 +40,10 @@ quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
 ```
-Add 
+To disable TestContainers, add:
 ```properties
 quarkus.devservices.enabled=false
 ```
-To disable TestContainers.
 
 Now you can @Inject a Couchbase `Cluster` into your project:
 
