@@ -171,7 +171,7 @@ final class Target_io_netty_handler_ssl_JdkSslServerContext {
     }
 }
 
-//TODO:
+//Internal Marker
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
 final class Target_io_netty_handler_ssl_JdkSslClientContext {
 
@@ -217,7 +217,7 @@ final class Target_io_netty_handler_ssl_JdkAlpnSslEngine {
     }
 }
 
-//TODO:
+//Internal Marker
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.SslContext")
 final class Target_io_netty_handler_ssl_SslContext {
 
@@ -239,7 +239,7 @@ final class Target_io_netty_handler_ssl_SslContext {
                 clientAuth, protocols, startTls, keyStoreType);
     }
 
-    //TODO:
+    //Internal Marker
     @Substitute
     static SslContext newClientContextInternal(SslProvider provider, Provider sslContextProvider,
             X509Certificate[] trustCert,
@@ -610,7 +610,6 @@ final class Target_SslContext {
     }
 }
 
-//TODO: Why is this commented out?
 //> Error: Substitution target for com.couchbase.quarkus.extension.runtime.nettyhandling.Target_io_netty_util_internal_shaded_org_jctools_util_UnsafeRefArrayAccess is not loaded. Use field `onlyWith` in the `TargetClass` annotation to make substitution only active when needed.
 
 //@TargetClass(className = "com.couchbase.client.core.deps.io.netty.util.internal.shaded.org.jctools.util.UnsafeLongArrayAccess", onlyWith = IsUnsafelongArrayAccessNotThere.class)

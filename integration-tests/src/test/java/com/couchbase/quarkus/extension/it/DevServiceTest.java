@@ -26,10 +26,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import jakarta.inject.Inject;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import com.couchbase.client.core.error.CasMismatchException;
 import com.couchbase.client.core.error.DocumentNotFoundException;
@@ -45,7 +44,6 @@ import com.couchbase.client.java.manager.bucket.BucketSettings;
 import com.couchbase.client.java.query.*;
 
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.TestInstance;
 import reactor.core.publisher.Mono;
 
 @QuarkusTest
@@ -74,6 +72,7 @@ public class DevServiceTest {
             .put("foo", "bar");
 
     private static String keyspace = String.join(".", bucketName, scopeName, collectionName);
+
     @BeforeAll
     void createAndGetKeyspace() {
         // Create Bucket, Scope and Collection

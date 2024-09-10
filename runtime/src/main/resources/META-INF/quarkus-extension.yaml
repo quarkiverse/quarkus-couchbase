@@ -4,6 +4,7 @@ metadata:
   keywords:
     - "couchbase"
     - "nosql"
+    - "database"
   guide: ...
   categories:
     - "data"
