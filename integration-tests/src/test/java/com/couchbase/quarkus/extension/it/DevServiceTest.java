@@ -56,9 +56,9 @@ public class DevServiceTest {
     private static Scope scope;
     private static Collection collection;
 
-    private static final String bucketName = "quarkusBucket";
-    private static final String scopeName = "quarkusScope";
-    private static final String collectionName = "quarkusCollection";
+    private static final String BUCKET_NAME = "quarkusBucket";
+    private static final String SCOPE_NAME = "quarkusScope";
+    private static final String COLLECTION_NAME = "quarkusCollection";
 
     public DevServiceTest(Cluster cluster) {
         this.cluster = cluster;
@@ -71,19 +71,19 @@ public class DevServiceTest {
             .create()
             .put("foo", "bar");
 
-    private static String keyspace = String.join(".", bucketName, scopeName, collectionName);
+    private static String keyspace = String.join(".", BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
 
     @BeforeAll
     void createAndGetKeyspace() {
         // Create Bucket, Scope and Collection
-        cluster.buckets().createBucket(BucketSettings.create(bucketName));
-        bucket = cluster.bucket(bucketName);
+        cluster.buckets().createBucket(BucketSettings.create(BUCKET_NAME));
+        bucket = cluster.bucket(BUCKET_NAME);
         bucket.waitUntilReady(Duration.ofSeconds(20));
-        bucket.collections().createScope(scopeName);
-        bucket.collections().createCollection(scopeName, collectionName);
+        bucket.collections().createScope(SCOPE_NAME);
+        bucket.collections().createCollection(SCOPE_NAME, COLLECTION_NAME);
 
-        scope = bucket.scope(scopeName);
-        collection = scope.collection(collectionName);
+        scope = bucket.scope(SCOPE_NAME);
+        collection = scope.collection(COLLECTION_NAME);
     }
 
     @Test
