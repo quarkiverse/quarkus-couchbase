@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.couchbase.quarkus.extension.runtime.nettyhandling;
+package com.couchbase.quarkus.extension.runtime;
 
 import java.nio.ByteBuffer;
 

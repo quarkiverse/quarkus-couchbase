@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.couchbase.quarkus.extension.runtime.nettyhandling;
+package com.couchbase.quarkus.extension.runtime.graal;
 
 import static com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues.DEFLATE;
 import static com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues.GZIP;
@@ -55,6 +55,7 @@ import com.couchbase.client.core.deps.io.netty.handler.ssl.ApplicationProtocolCo
 import com.couchbase.client.core.deps.io.netty.util.concurrent.GlobalEventExecutor;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.JdkLoggerFactory;
+import com.couchbase.quarkus.extension.runtime.EmptyByteBufStub;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.RecomputeFieldValue.Kind;

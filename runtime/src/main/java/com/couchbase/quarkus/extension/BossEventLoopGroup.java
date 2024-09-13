@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.couchbase.quarkus.extension.runtime.nettyhandling;
+package com.couchbase.quarkus.extension;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -22,12 +22,12 @@ import jakarta.inject.Qualifier;
 
 @Qualifier
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MainEventLoopGroup {
+public @interface BossEventLoopGroup {
 
     /**
      * Supports inline instantiation of this qualifier.
      */
-    public static final class Literal extends AnnotationLiteral<MainEventLoopGroup> implements MainEventLoopGroup {
+    public static final class Literal extends AnnotationLiteral<BossEventLoopGroup> implements BossEventLoopGroup {
 
         public static final Literal INSTANCE = new Literal();
 
