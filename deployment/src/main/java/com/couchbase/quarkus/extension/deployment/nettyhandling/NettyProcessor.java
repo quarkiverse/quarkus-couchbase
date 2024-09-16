@@ -25,10 +25,10 @@ import org.jboss.logmanager.Level;
 import com.couchbase.client.core.deps.io.netty.channel.EventLoopGroup;
 import com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
-import com.couchbase.quarkus.extension.BossEventLoopGroup;
-import com.couchbase.quarkus.extension.MainEventLoopGroup;
-import com.couchbase.quarkus.extension.runtime.EmptyByteBufStub;
-import com.couchbase.quarkus.extension.runtime.NettyRecorder;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.BossEventLoopGroup;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.MainEventLoopGroup;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.NettyRecorder;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;

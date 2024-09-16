@@ -1,18 +1,4 @@
-/*
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-package com.couchbase.quarkus.extension.runtime.graal;
+package com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.graal;
 
 import static com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues.DEFLATE;
 import static com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues.GZIP;
@@ -23,10 +9,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.security.*;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.BooleanSupplier;
 
@@ -50,12 +44,19 @@ import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibCod
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibWrapper;
 import com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpHeaderValues;
 import com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2Exception;
-import com.couchbase.client.core.deps.io.netty.handler.ssl.*;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.ApplicationProtocolConfig;
 import com.couchbase.client.core.deps.io.netty.handler.ssl.ApplicationProtocolConfig.SelectorFailureBehavior;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.CipherSuiteFilter;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.ClientAuth;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.JdkAlpnApplicationProtocolNegotiator;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.JdkApplicationProtocolNegotiator;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.SslContext;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.SslContextOption;
+import com.couchbase.client.core.deps.io.netty.handler.ssl.SslProvider;
 import com.couchbase.client.core.deps.io.netty.util.concurrent.GlobalEventExecutor;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.JdkLoggerFactory;
-import com.couchbase.quarkus.extension.runtime.EmptyByteBufStub;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.RecomputeFieldValue;
 import com.oracle.svm.core.annotate.RecomputeFieldValue.Kind;
@@ -162,27 +163,30 @@ final class Target_io_netty_handler_ssl_OpenSsl {
 
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslServerContext")
 final class Target_io_netty_handler_ssl_JdkSslServerContext {
+
     @Alias
     Target_io_netty_handler_ssl_JdkSslServerContext(Provider provider,
             X509Certificate[] trustCertCollection, TrustManagerFactory trustManagerFactory,
             X509Certificate[] keyCertChain, PrivateKey key, String keyPassword,
             KeyManagerFactory keyManagerFactory, Iterable<String> ciphers, CipherSuiteFilter cipherFilter,
             ApplicationProtocolConfig apn, long sessionCacheSize, long sessionTimeout,
-            ClientAuth clientAuth, String[] protocols, boolean startTls, String keyStore) throws SSLException {
+            ClientAuth clientAuth, String[] protocols, boolean startTls,
+            String keyStore)
+            throws SSLException {
     }
 }
 
-//Internal Marker
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
 final class Target_io_netty_handler_ssl_JdkSslClientContext {
 
     @Alias
-    Target_io_netty_handler_ssl_JdkSslClientContext(Provider sslContextProvider,
-            X509Certificate[] trustCertCollection, TrustManagerFactory trustManagerFactory,
-            X509Certificate[] keyCertChain, PrivateKey key, String keyPassword,
-            KeyManagerFactory keyManagerFactory, Iterable<String> ciphers, CipherSuiteFilter cipherFilter,
-            ApplicationProtocolConfig apn, String[] protocols, long sessionCacheSize, long sessionTimeout,
-            String keyStoreType) throws SSLException {
+    Target_io_netty_handler_ssl_JdkSslClientContext(Provider sslContextProvider, X509Certificate[] trustCertCollection,
+            TrustManagerFactory trustManagerFactory, X509Certificate[] keyCertChain, PrivateKey key,
+            String keyPassword, KeyManagerFactory keyManagerFactory, Iterable<String> ciphers,
+            CipherSuiteFilter cipherFilter, ApplicationProtocolConfig apn, String[] protocols,
+            long sessionCacheSize, long sessionTimeout, String keyStoreType)
+            throws SSLException {
+
     }
 }
 
@@ -218,18 +222,16 @@ final class Target_io_netty_handler_ssl_JdkAlpnSslEngine {
     }
 }
 
-//Internal Marker
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.SslContext")
 final class Target_io_netty_handler_ssl_SslContext {
 
     @Substitute
     static SslContext newServerContextInternal(SslProvider provider, Provider sslContextProvider,
             X509Certificate[] trustCertCollection, TrustManagerFactory trustManagerFactory,
-            X509Certificate[] keyCertChain, PrivateKey key, String keyPassword,
-            KeyManagerFactory keyManagerFactory, Iterable<String> ciphers,
-            CipherSuiteFilter cipherFilter, ApplicationProtocolConfig apn,
-            long sessionCacheSize, long sessionTimeout, ClientAuth clientAuth,
-            String[] protocols, boolean startTls, boolean enableOcsp, String keyStoreType,
+            X509Certificate[] keyCertChain,
+            PrivateKey key, String keyPassword, KeyManagerFactory keyManagerFactory, Iterable<String> ciphers,
+            CipherSuiteFilter cipherFilter, ApplicationProtocolConfig apn, long sessionCacheSize, long sessionTimeout,
+            ClientAuth clientAuth, String[] protocols, boolean startTls, boolean enableOcsp, String keyStoreType,
             Map.Entry<SslContextOption<?>, Object>... ctxOptions) throws SSLException {
         if (enableOcsp) {
             throw new IllegalArgumentException("OCSP is not supported with this SslProvider: " + provider);
@@ -240,7 +242,6 @@ final class Target_io_netty_handler_ssl_SslContext {
                 clientAuth, protocols, startTls, keyStoreType);
     }
 
-    //Internal Marker
     @Substitute
     static SslContext newClientContextInternal(SslProvider provider, Provider sslContextProvider,
             X509Certificate[] trustCert,
@@ -394,7 +395,7 @@ final class Target_io_netty_channel_nio_NioEventLoop {
 final class Target_io_netty_buffer_AbstractReferenceCountedByteBuf {
 
     @Alias
-    @RecomputeFieldValue(kind = Kind.FieldOffset, name = "refCnt")
+    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.FieldOffset, name = "refCnt")
     private static long REFCNT_FIELD_OFFSET;
 }
 
@@ -402,7 +403,7 @@ final class Target_io_netty_buffer_AbstractReferenceCountedByteBuf {
 final class Target_io_netty_util_AbstractReferenceCounted {
 
     @Alias
-    @RecomputeFieldValue(kind = Kind.FieldOffset, name = "refCnt")
+    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.FieldOffset, name = "refCnt")
     private static long REFCNT_FIELD_OFFSET;
 }
 
@@ -455,11 +456,11 @@ final class Target_io_netty_util_internal_NativeLibraryLoader {
 final class Target_io_netty_buffer_EmptyByteBuf {
 
     @Alias
-    @RecomputeFieldValue(kind = Kind.Reset)
+    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.Reset)
     private static ByteBuffer EMPTY_BYTE_BUFFER;
 
     @Alias
-    @RecomputeFieldValue(kind = Kind.Reset)
+    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.Reset)
     private static long EMPTY_BYTE_BUFFER_ADDRESS;
 
     @Substitute
@@ -538,8 +539,7 @@ final class Target_io_netty_handler_codec_http2_DelegatingDecompressorFrameListe
                 return null;
             } else {
                 ZlibWrapper wrapper = this.strict ? ZlibWrapper.ZLIB : ZlibWrapper.ZLIB_OR_NONE;
-                return new EmbeddedChannel(ctx.channel().id(), ctx.channel().metadata().hasDisconnect(),
-                        ctx.channel().config(),
+                return new EmbeddedChannel(ctx.channel().id(), ctx.channel().metadata().hasDisconnect(), ctx.channel().config(),
                         new ChannelHandler[] { ZlibCodecFactory.newZlibDecoder(wrapper) });
             }
         } else {
@@ -610,30 +610,6 @@ final class Target_SslContext {
         return null;
     }
 }
-
-//> Error: Substitution target for com.couchbase.quarkus.extension.runtime.nettyhandling.Target_io_netty_util_internal_shaded_org_jctools_util_UnsafeRefArrayAccess is not loaded. Use field `onlyWith` in the `TargetClass` annotation to make substitution only active when needed.
-
-//@TargetClass(className = "com.couchbase.client.core.deps.io.netty.util.internal.shaded.org.jctools.util.UnsafeLongArrayAccess", onlyWith = IsUnsafelongArrayAccessNotThere.class)
-//final class Target_io_netty_util_internal_shaded_org_jctools_util_UnsafeRefArrayAccess {
-//
-//    @Alias
-//    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.ArrayIndexShift, declClass = Object[].class)
-//    public static int LONG_ELEMENT_SHIFT;
-//}
-//
-//class IsUnsafelongArrayAccessNotThere implements BooleanSupplier {
-//
-//    @Override
-//    public boolean getAsBoolean() {
-//        try {
-//            NettySubstitutions.class.getClassLoader().loadClass(
-//                    "com.couchbase.client.core.deps.io.netty.util.internal.shaded.org.jctools.util.UnsafeLongArrayAccess");
-//            return false;
-//        } catch (Exception e) {
-//            return true;
-//        }
-//    }
-//}
 
 class IsBouncyNotThere implements BooleanSupplier {
 
