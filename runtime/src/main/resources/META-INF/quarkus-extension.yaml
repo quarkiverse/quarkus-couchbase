@@ -8,4 +8,5 @@ metadata:
   guide: ...
   categories:
     - "data"
+  icon-url: "https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/couchbase-filled.svg"
   status: "preview"
