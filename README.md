@@ -1,4 +1,13 @@
-# Quarkus Couchbase Extension
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/quarkus.svg" width="67" height="70" >
+<img src="https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/plus-sign.svg" height="70" >
+<img src="https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/couchbase-filled.svg" height="70" >
+
+# Quarkus Couchbase
+</div>
+<br>
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
