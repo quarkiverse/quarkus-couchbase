@@ -1,12 +1,13 @@
 package com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.graal;
 
+import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.TargetClass;
+
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.JdkZlibDecoder;
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.JdkZlibEncoder;
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibDecoder;
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibEncoder;
 import com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibWrapper;
-import com.oracle.svm.core.annotate.Substitute;
-import com.oracle.svm.core.annotate.TargetClass;
 
 /**
  * This substitution avoid having jcraft zlib added to the build

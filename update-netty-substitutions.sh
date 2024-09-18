@@ -19,7 +19,7 @@ echo "Found Quarkus version: $QUARKUS_VERSION"
 
 # Clone repo
 echo "1 - Cloning Quarkus"
-git clone --depth=1 --filter=blob:none --sparse --branch 3.12.3 git@github.com:quarkusio/quarkus.git
+git clone --depth=1 --filter=blob:none --sparse --branch "$QUARKUS_VERSION" git@github.com:quarkusio/quarkus.git
 cd quarkus
 git sparse-checkout set extensions/netty
 cd ..
