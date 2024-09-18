@@ -7,6 +7,7 @@ DEST_RUNTIME="runtime/src/main/java/com/couchbase/quarkus/extension/runtime/nett
 SRC_DEPLOYMENT="quarkus/extensions/netty/deployment/src/main/java/io/quarkus/netty/deployment"
 DEST_DEPLOYMENT="deployment/src/main/java/com/couchbase/quarkus/extension/deployment/nettyhandling"
 
+# Get Quarkus version from parent pom.xml and use it to checkout the correct Quarkus branch for netty substitutions
 POM_FILE=$(find . -maxdepth 1 -name "pom.xml" -print -quit)
 QUARKUS_VERSION=$(sed -n 's/.*<quarkus.version>\(.*\)<\/quarkus.version>.*/\1/p' "$POM_FILE")
 
