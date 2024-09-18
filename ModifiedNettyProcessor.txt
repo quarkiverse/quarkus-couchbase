@@ -42,7 +42,6 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageSystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.UnsafeAccessedFieldBuildItem;
 import io.quarkus.deployment.logging.LogCleanupFilterBuildItem;
 
@@ -65,7 +64,7 @@ class NettyProcessor {
 
     @BuildStep
     public SystemPropertyBuildItem limitArenaSize(NettyBuildTimeConfig config,
-                                                  List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems) {
+            List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems) {
         String maxOrder = calculateMaxOrder(config.allocatorMaxOrder, minMaxOrderBuildItems, true);
 
         //in native mode we limit the size of the epoll array
@@ -228,9 +227,9 @@ class NettyProcessor {
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     void registerEventLoopBeans(BuildProducer<SyntheticBeanBuildItem> syntheticBeans,
-                                Optional<EventLoopSupplierBuildItem> loopSupplierBuildItem,
-                                NettyRecorder recorder,
-                                BuildProducer<EventLoopGroupBuildItem> eventLoopGroups) {
+            Optional<EventLoopSupplierBuildItem> loopSupplierBuildItem,
+            NettyRecorder recorder,
+            BuildProducer<EventLoopGroupBuildItem> eventLoopGroups) {
         Supplier<EventLoopGroup> boss;
         Supplier<EventLoopGroup> main;
         if (loopSupplierBuildItem.isPresent()) {
@@ -270,11 +269,11 @@ class NettyProcessor {
         return AdditionalBeanBuildItem.builder().addBeanClasses(BossEventLoopGroup.class, MainEventLoopGroup.class).build();
     }
 
-    @BuildStep
-    public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() {
-        return new RuntimeReinitializedClassBuildItem(
-                "com.couchbase.quarkus.extension.runtime.nettyhandling.Holder_io_netty_util_concurrent_ScheduledFutureTask");
-    }
+    //    @BuildStep
+    //    public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() {
+    //        return new RuntimeReinitializedClassBuildItem(
+    //                "com.couchbase.quarkus.extension.runtime.nettyhandling.Holder_io_netty_util_concurrent_ScheduledFutureTask");
+    //    }
 
     @BuildStep
     public List<UnsafeAccessedFieldBuildItem> unsafeAccessedFields() {
@@ -313,7 +312,7 @@ class NettyProcessor {
     //    }
 
     private String calculateMaxOrder(OptionalInt userConfig, List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems,
-                                     boolean shouldWarn) {
+            boolean shouldWarn) {
         int result = DEFAULT_NETTY_ALLOCATOR_MAX_ORDER;
         for (MinNettyAllocatorMaxOrderBuildItem minMaxOrderBuildItem : minMaxOrderBuildItems) {
             if (minMaxOrderBuildItem.getMaxOrder() > result) {

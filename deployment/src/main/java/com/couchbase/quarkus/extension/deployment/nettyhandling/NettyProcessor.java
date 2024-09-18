@@ -42,7 +42,6 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageSystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.UnsafeAccessedFieldBuildItem;
 import io.quarkus.deployment.logging.LogCleanupFilterBuildItem;
 
@@ -270,11 +269,11 @@ class NettyProcessor {
         return AdditionalBeanBuildItem.builder().addBeanClasses(BossEventLoopGroup.class, MainEventLoopGroup.class).build();
     }
 
-    @BuildStep
-    public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() {
-        return new RuntimeReinitializedClassBuildItem(
-                "com.couchbase.quarkus.extension.runtime.nettyhandling.Holder_io_netty_util_concurrent_ScheduledFutureTask");
-    }
+    //    @BuildStep
+    //    public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() {
+    //        return new RuntimeReinitializedClassBuildItem(
+    //                "com.couchbase.quarkus.extension.runtime.nettyhandling.Holder_io_netty_util_concurrent_ScheduledFutureTask");
+    //    }
 
     @BuildStep
     public List<UnsafeAccessedFieldBuildItem> unsafeAccessedFields() {
