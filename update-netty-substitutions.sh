@@ -48,13 +48,36 @@ find "$DEST_RUNTIME" "$DEST_DEPLOYMENT" -type f -name "*.java" -exec sed -i '' \
     -e 's/io\.quarkus\.netty\.runtime\.graal/com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.graal/g' \
     "{}" +
 
-# Replace copied NettyProcessor.java with our modified one
-echo "6 - Replacing NettyProcessor"
-cp -f ModifiedNettyProcessor.txt "$DEST_DEPLOYMENT"/NettyProcessor.java
-
 # Replace a line in the netty config which conflicts with existing netty extension
-echo "7 - Renaming Netty config item"
+echo "6 - Renaming Netty config item"
 sed -i '' 's/@ConfigRoot(name = "netty", phase = ConfigPhase.BUILD_TIME)/@ConfigRoot(name = "couchbase.netty", phase = ConfigPhase.BUILD_TIME)/' "$DEST_DEPLOYMENT/NettyBuildTimeConfig.java"
+
+#Delete two methods in NettyProcessor which we don't want to use
+echo "7 - Deleting code we don't want in NettyProcessor"
+
+sed -i '' '
+  /@BuildStep/{
+    N
+    /public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() /{
+      N
+      N
+      N
+      d
+    }
+  }
+' "$DEST_DEPLOYMENT/NettyProcessor.java"
+
+sed -i '' '
+  /@BuildStep/{
+    N
+    /LogCleanupFilterBuildItem cleanupMacDNSInLog() /{
+      N
+      N
+      N
+      d
+    }
+  }
+' "$DEST_DEPLOYMENT/NettyProcessor.java"
 
 # Delete the cloned repo
 echo "8 - Deleting cloned repo"
