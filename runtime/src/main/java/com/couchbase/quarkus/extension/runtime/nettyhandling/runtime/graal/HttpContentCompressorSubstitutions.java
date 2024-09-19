@@ -2,11 +2,10 @@ package com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.graal;
 
 import java.util.function.BooleanSupplier;
 
-import com.oracle.svm.core.annotate.Substitute;
-import com.oracle.svm.core.annotate.TargetClass;
-
 import com.couchbase.client.core.deps.io.netty.buffer.ByteBuf;
 import com.couchbase.client.core.deps.io.netty.channel.ChannelHandlerContext;
+import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.TargetClass;
 
 public class HttpContentCompressorSubstitutions {
 

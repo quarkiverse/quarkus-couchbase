@@ -30,12 +30,6 @@ import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.oracle.svm.core.annotate.Alias;
-import com.oracle.svm.core.annotate.RecomputeFieldValue;
-import com.oracle.svm.core.annotate.RecomputeFieldValue.Kind;
-import com.oracle.svm.core.annotate.Substitute;
-import com.oracle.svm.core.annotate.TargetClass;
-
 import com.couchbase.client.core.deps.io.netty.bootstrap.AbstractBootstrapConfig;
 import com.couchbase.client.core.deps.io.netty.bootstrap.ChannelFactory;
 import com.couchbase.client.core.deps.io.netty.buffer.ByteBuf;
@@ -63,6 +57,11 @@ import com.couchbase.client.core.deps.io.netty.util.concurrent.GlobalEventExecut
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.JdkLoggerFactory;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
+import com.oracle.svm.core.annotate.Alias;
+import com.oracle.svm.core.annotate.RecomputeFieldValue;
+import com.oracle.svm.core.annotate.RecomputeFieldValue.Kind;
+import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.TargetClass;
 
 /**
  * This substitution avoid having loggers added to the build

@@ -7,6 +7,7 @@ import org.jboss.logging.Logger;
 import com.couchbase.client.core.deps.io.netty.channel.DefaultChannelId;
 import com.couchbase.client.core.deps.io.netty.channel.EventLoopGroup;
 import com.couchbase.client.core.deps.io.netty.channel.nio.NioEventLoopGroup;
+
 import io.quarkus.runtime.annotations.Recorder;
 
 @Recorder

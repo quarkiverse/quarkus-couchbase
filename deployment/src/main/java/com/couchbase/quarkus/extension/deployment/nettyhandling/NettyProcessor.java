@@ -13,9 +13,13 @@ import org.jboss.logging.Logger;
 import org.jboss.logmanager.Level;
 
 import com.couchbase.client.core.deps.io.netty.channel.EventLoopGroup;
-import com.couchbase.client.core.deps.io.netty.resolver.dns.DnsServerAddressStreamProviders;
 import com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent;
 import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLoggerFactory;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.BossEventLoopGroup;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.MainEventLoopGroup;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.NettyRecorder;
+
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
@@ -28,13 +32,8 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageSystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.UnsafeAccessedFieldBuildItem;
 import io.quarkus.deployment.logging.LogCleanupFilterBuildItem;
-import com.couchbase.quarkus.extension.runtime.nettyhandling.BossEventLoopGroup;
-import com.couchbase.quarkus.extension.runtime.nettyhandling.MainEventLoopGroup;
-import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
-import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.NettyRecorder;
 
 class NettyProcessor {
 
@@ -73,7 +72,8 @@ class NettyProcessor {
         final int EUI64_MAC_ADDRESS_LENGTH = 8;
         final byte[] machineIdBytes = new byte[EUI64_MAC_ADDRESS_LENGTH];
         new Random().nextBytes(machineIdBytes);
-        final String nettyMachineId = com.couchbase.client.core.deps.io.netty.util.internal.MacAddressUtil.formatAddress(machineIdBytes);
+        final String nettyMachineId = com.couchbase.client.core.deps.io.netty.util.internal.MacAddressUtil
+                .formatAddress(machineIdBytes);
         return new SystemPropertyBuildItem("com.couchbase.client.core.deps.io.netty.machineId", nettyMachineId);
     }
 
@@ -83,12 +83,15 @@ class NettyProcessor {
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
             List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems) {
 
-        reflectiveClass.produce(ReflectiveClassBuildItem.builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioSocketChannel")
-                .build());
-        reflectiveClass
-                .produce(ReflectiveClassBuildItem.builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioServerSocketChannel")
+        reflectiveClass.produce(
+                ReflectiveClassBuildItem.builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioSocketChannel")
                         .build());
-        reflectiveClass.produce(ReflectiveClassBuildItem.builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioDatagramChannel")
+        reflectiveClass
+                .produce(ReflectiveClassBuildItem
+                        .builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioServerSocketChannel")
+                        .build());
+        reflectiveClass.produce(ReflectiveClassBuildItem
+                .builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioDatagramChannel")
                 .build());
         reflectiveClass
                 .produce(ReflectiveClassBuildItem.builder("java.util.LinkedHashMap").build());
@@ -100,14 +103,18 @@ class NettyProcessor {
                 // Use small chunks to avoid a lot of wasted space. Default is 16mb * arenas (derived from core count)
                 // Since buffers are cached to threads, the malloc overhead is temporary anyway
                 .addNativeImageSystemProperty("com.couchbase.client.core.deps.io.netty.allocator.maxOrder", maxOrder)
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator")
+                .addRuntimeInitializedClass(
+                        "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ConscryptAlpnSslEngine")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslEngine")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslContext")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslClientContext")
+                .addRuntimeInitializedClass(
+                        "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslContext")
+                .addRuntimeInitializedClass(
+                        "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslClientContext")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslServerContext")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.util.ThreadLocalInsecureRandom")
+                .addRuntimeInitializedClass(
+                        "com.couchbase.client.core.deps.io.netty.handler.ssl.util.ThreadLocalInsecureRandom")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil$HexUtil")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.PooledByteBufAllocator")
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufAllocator")
@@ -116,24 +123,33 @@ class NettyProcessor {
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.DefaultChannelId")
                 .addNativeImageSystemProperty("com.couchbase.client.core.deps.io.netty.leakDetection.level", "DISABLED");
 
-        if (QuarkusClassLoader.isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectEncoder")) {
+        if (QuarkusClassLoader
+                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectEncoder")) {
             builder
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectEncoder")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder")
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder")
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder")
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdOptions")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdConstants")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.compression.BrotliOptions");
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdConstants")
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.compression.BrotliOptions");
         } else {
             log.debug("Not registering Netty HTTP classes as they were not found");
         }
 
-        if (QuarkusClassLoader.isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")) {
+        if (QuarkusClassLoader
+                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")) {
             builder
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ClientUpgradeCodec")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http2.DefaultHttp2FrameWriter")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ConnectionHandler");
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ClientUpgradeCodec")
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.DefaultHttp2FrameWriter")
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ConnectionHandler");
         } else {
             log.debug("Not registering Netty HTTP2 classes as they were not found");
         }
@@ -168,11 +184,14 @@ class NettyProcessor {
         builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent")
                 .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent0");
 
-        if (QuarkusClassLoader.isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
+        if (QuarkusClassLoader
+                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
             builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")
                     .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.Unpooled")
-                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
-                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf");
+                    .addRuntimeReinitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
+                    .addRuntimeReinitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf");
 
             if (QuarkusClassLoader
                     .isClassPresentAtRuntime("org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload")) {
@@ -240,13 +259,13 @@ class NettyProcessor {
         return AdditionalBeanBuildItem.builder().addBeanClasses(BossEventLoopGroup.class, MainEventLoopGroup.class).build();
     }
 
-
     @BuildStep
     public List<UnsafeAccessedFieldBuildItem> unsafeAccessedFields() {
         return Arrays.asList(
                 new UnsafeAccessedFieldBuildItem("sun.nio.ch.SelectorImpl", "selectedKeys"),
                 new UnsafeAccessedFieldBuildItem("sun.nio.ch.SelectorImpl", "publicSelectedKeys"),
-                new UnsafeAccessedFieldBuildItem("com.couchbase.client.core.deps.io.netty.util.internal.shaded.org.jctools.util.UnsafeRefArrayAccess",
+                new UnsafeAccessedFieldBuildItem(
+                        "com.couchbase.client.core.deps.io.netty.util.internal.shaded.org.jctools.util.UnsafeRefArrayAccess",
                         "REF_ELEMENT_SHIFT"));
     }
 
