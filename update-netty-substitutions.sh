@@ -79,8 +79,12 @@ sed -i '' '
   }
 ' "$DEST_DEPLOYMENT/NettyProcessor.java"
 
+#This isn't absolutely necessary, as Quarkus will optimise imports and remove unused/missing ones during compilation.
+echo "8 - Deleting missing import"
+sed -i '' '/import com.couchbase.client.core.deps.io.netty.resolver.dns.DnsServerAddressStreamProviders;/d' "$DEST_DEPLOYMENT/NettyProcessor.java"
+
 # Delete the cloned repo
-echo "8 - Deleting cloned repo"
+echo "9 - Deleting cloned repo"
 rm -rf "quarkus"
 
-echo "9 - Done!"
+echo "10 - Done!"
