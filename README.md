@@ -1,23 +1,38 @@
-# Quarkus Couchbase Extension
+
+<div align="center">
+<img src="https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/quarkus.svg" width="67" height="70" >
+<img src="https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/plus-sign.svg" height="70" >
+<img src="https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/couchbase-filled.svg" height="70" >
+
+# Quarkus Couchbase
+</div>
+<br>
+
+<div align="center">
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
+[![Version](https://img.shields.io/maven-central/v/io.quarkiverse.couchbase/quarkus-couchbase?logo=apache-maven&style=flat-square)](https://search.maven.org/artifact/io.quarkiverse.couchbase/quarkus-couchbase)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
+[![Build](https://github.com/quarkiverse/quarkus-couchbase/actions/workflows/build.yml/badge.svg)](https://github.com/quarkiverse/quarkus-couchbase/actions/workflows/build.yml)
+
+</div>
 Integrates Couchbase into Quarkus.
 
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/quarkiverse/quarkus-couchbase/Build?style=for-the-badge)
-[![Version](https://img.shields.io/maven-central/v/io.quarkiverse.couchbase/quarkus-couchbase?logo=apache-maven&style=for-the-badge)](https://search.maven.org/artifact/io.quarkiverse.couchbase/quarkus-couchbase)
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/quarkiverse/quarkus-couchbase.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/quarkiverse/quarkus-couchbase/alerts/)
-[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/quarkiverse/quarkus-couchbase.svg?logo=lgtm&logoWidth=18&style=for-the-badge)](https://lgtm.com/projects/g/quarkiverse/quarkus-couchbase/context:java)
-
-
-This extension is currently in alpha status.  It supports:
+This extension is currently in beta status.  It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
-- Configuring the Cluster through `application.properties`.  Currently a minimal set of configuration options is provided.
-- Graal/native-image, though so far it has been minimally tested with basic cases.
+- Configuring the Cluster through `application.properties`.  Currently, a minimal set of configuration options is provided.
+- Mandrel/GraalVM/native-image.
 - A dev service that starts a Couchbase server in a Docker container. With this you can develop your Quarkus app without having to install Couchbase on your machine.
 
 Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
+
+## Native Image
+The extension supports native mode and has been tested with Mandrel 24.0.2.r22 and Graal 22.0.2.
+
+It is recommended to use these versions or the latest for both.
 
 ## Usage
 Add it to your project:
@@ -34,6 +49,10 @@ Provide the Couchbase configuration in `application.properties`:
 quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
+```
+To disable TestContainers, add:
+```properties
+quarkus.devservices.enabled=false
 ```
 
 Now you can @Inject a Couchbase `Cluster` into your project:
@@ -74,8 +93,13 @@ public class TestCouchbaseResource {
 And test http://localhost:8080/couchbase/test.
 
 ## Limitations
-In this early alpha release the configuration options are limited to the three shown above.  
+In this a beta release the configuration options are limited to the three shown above.  
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
+
+## License
+All the files under `nettyhandling` directories, both in the `runtime` and `deployment` modules are
+taken as-were or modified from the official [netty](https://github.com/quarkusio/quarkus/tree/main/extensions/netty) extension.
+Couchbase does not intend copyright infringement or claim ownership over these files or their content.
 
 ## Contributors ✨
 

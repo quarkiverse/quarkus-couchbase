@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Couchbase, Inc.
+ * Copyright (c) 2024 Couchbase, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import javax.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Produces;
 
 import com.couchbase.client.java.Cluster;
 

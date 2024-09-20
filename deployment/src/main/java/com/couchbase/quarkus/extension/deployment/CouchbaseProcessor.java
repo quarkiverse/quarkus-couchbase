@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Couchbase, Inc.
+ * Copyright (c) 2024 Couchbase, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package com.couchbase.quarkus.extension.deployment;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import com.couchbase.client.java.Cluster;
 import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
@@ -43,5 +43,4 @@ public class CouchbaseProcessor {
                 .done());
 
     }
-
 }

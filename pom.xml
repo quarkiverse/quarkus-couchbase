@@ -37,6 +37,11 @@
       <name>Graham Pople</name>
       <email>graham.pople@couchbase.com</email>
     </developer>
+    <developer>
+      <id>emilienbev</id>
+      <name>Emilien Bevierre</name>
+      <email>emilien.bevierre@couchbase.com</email>
+    </developer>
   </developers>
   <scm>
     <connection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</connection>
@@ -48,16 +53,17 @@
     <module>runtime</module>
   </modules>
   <properties>
-    <compiler-plugin.version>3.8.1</compiler-plugin.version>
+    <compiler-plugin.version>3.12.1</compiler-plugin.version>
     <failsafe-plugin.version>${surefire-plugin.version}</failsafe-plugin.version>
     <maven.compiler.parameters>true</maven.compiler.parameters>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <quarkus.version>2.16.12.Final</quarkus.version>
+    <quarkus.version>3.12.3</quarkus.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <couchbase.client.version>3.2.0</couchbase.client.version>
+    <!--  Careful about updating this. Newer versions of the SDK may not compile natively.  -->
+    <couchbase.client.version>3.7.2</couchbase.client.version>
   </properties>
   <dependencyManagement>
     <dependencies>
