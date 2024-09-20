@@ -54,8 +54,8 @@ sed -i '' 's/@ConfigRoot(name = "netty", phase = ConfigPhase.BUILD_TIME)/@Config
 
 #Delete two methods in NettyProcessor which we don't want to use
 echo "7 - Deleting code we don't want in NettyProcessor"
-perl -i -0777 -pe 's/\@BuildStep\n\s*public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask\(\) \{\n\s*return new RuntimeReinitializedClassBuildItem\(\n\s*"com\.couchbase\.quarkus\.extension\.runtime\.nettyhandling\.runtime\.graal\.Holder_io_netty_util_concurrent_ScheduledFutureTask"\);\n\s*\}//g' "$DEST_DEPLOYMENT/NettyProcessor.java"
-perl -i -0777 -pe 's/\@BuildStep\n\s*LogCleanupFilterBuildItem cleanupMacDNSInLog\(\) \{\n\s*return new LogCleanupFilterBuildItem\(DnsServerAddressStreamProviders\.class\.getName\(\), Level\.WARN,\n\s*"Can not find com\.couchbase\.client\.core\.deps\.io\.netty\.resolver\.dns\.macos\.MacOSDnsServerAddressStreamProvider in the classpath"\);\n\s*\}//g' "$DEST_DEPLOYMENT/NettyProcessor.java"
+./deleteMethod.sh "public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask" "$DEST_DEPLOYMENT/NettyProcessor.java"
+./deleteMethod.sh "LogCleanupFilterBuildItem cleanupMacDNSInLog" "$DEST_DEPLOYMENT/NettyProcessor.java"
 
 #This isn't absolutely necessary, as Quarkus will optimise imports and remove unused/missing ones during compilation.
 echo "8 - Deleting missing import"
