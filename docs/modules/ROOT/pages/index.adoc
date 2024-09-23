@@ -3,6 +3,8 @@
 :sectanchors:
 :url-repo: https://github.com/quarkiverse/quarkus-couchbase
 
+include::./includes/attributes.adoc[]
+
 Integrates Couchbase into Quarkus.
 
 This extension is currently in alpha status.  It supports:
@@ -13,13 +15,13 @@ This extension is currently in alpha status.  It supports:
 
 Please try it out and provide feedback, ideas and bug reports xref:https://github.com/quarkiverse/quarkus-couchbase/issues[on Github].
 
-## Usage
+== Usage
 Add it to your project:
 ```
 <dependency>
   <groupId>com.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>1.0.0-alpha.1</version>
+  <version>{project-version}</version>
 </dependency>
 ```
 
@@ -69,6 +71,6 @@ public class TestCouchbaseResource {
 
 And test http://localhost:8080/couchbase/test.
 
-## Limitations
+== Limitations
 In this early alpha release the configuration options are limited to the three shown above.
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
