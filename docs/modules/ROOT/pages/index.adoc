@@ -17,26 +17,31 @@ Please try it out and provide feedback, ideas and bug reports xref:https://githu
 
 == Usage
 Add it to your project:
-```
+
+[source]
+----
 <dependency>
   <groupId>com.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
   <version>{project-version}</version>
 </dependency>
-```
+----
 
 (Note this will soon be updated to the new groupId of `io.quarkiverse.couchbase`, but it has not yet been published to Maven under this.)
 
 Provide the Couchbase configuration in `application.properties`:
-```
+
+[source]
+----
 quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
-```
+----
 
 Now you can @Inject a Couchbase `Cluster` into your project:
 
-```
+[source]
+----
 @Path("/couchbase")
 public class TestCouchbaseResource {
     @Inject
@@ -67,7 +72,7 @@ public class TestCouchbaseResource {
         return "success!";
     }
 }
-```
+----
 
 And test http://localhost:8080/couchbase/test.
 

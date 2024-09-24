@@ -5,7 +5,7 @@ metadata:
     - "couchbase"
     - "nosql"
     - "database"
-  guide: ...
+  guide: "https://docs.quarkiverse.io/quarkus-couchbase/dev/index.html"
   categories:
     - "data"
   icon-url: "https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/couchbase-filled.svg"
