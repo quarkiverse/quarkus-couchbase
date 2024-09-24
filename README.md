@@ -40,7 +40,7 @@ Add it to your project:
 <dependency>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>1.0.0-alpha.1</version>
+  <version>1.0.0.Beta1</version>
 </dependency>
 ```
 
