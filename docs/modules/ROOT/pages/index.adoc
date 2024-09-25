@@ -1,5 +1,5 @@
 = Quarkus Couchbase
-:description: Quarkus Couchbase documentation
+:description: Quarkus Couchbase Documentation
 :sectanchors:
 :url-repo: https://github.com/quarkiverse/quarkus-couchbase
 
@@ -7,11 +7,11 @@ include::./includes/attributes.adoc[]
 
 Integrates Couchbase into Quarkus.
 
-This extension is currently in alpha status.  It supports:
+This extension is currently in beta status. It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
 - Configuring the Cluster through `application.properties`.  Currently a minimal set of configuration options is provided.
-- Graal/native-image, though so far it has been minimally tested with basic cases.
+- GraalVM/Mandrel/native-image.
 
 Please try it out and provide feedback, ideas and bug reports xref:https://github.com/quarkiverse/quarkus-couchbase/issues[on Github].
 
@@ -21,15 +21,13 @@ Add it to your project:
 [source]
 ----
 <dependency>
-  <groupId>com.couchbase</groupId>
+  <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>{project-version}</version>
+  <version>{latest-version}</version>
 </dependency>
 ----
 
-(Note this will soon be updated to the new groupId of `io.quarkiverse.couchbase`, but it has not yet been published to Maven under this.)
-
-Provide the Couchbase configuration in `application.properties`:
+Provide the Couchbase configuration in `application.properties` (usually located in your `runtime/resources/META-INF/native-image` directory).
 
 [source]
 ----
@@ -38,7 +36,7 @@ quarkus.couchbase.username=username
 quarkus.couchbase.password=password
 ----
 
-Now you can @Inject a Couchbase `Cluster` into your project:
+You can now `@Inject` a Couchbase `Cluster` into your project:
 
 [source]
 ----
@@ -69,13 +67,13 @@ public class TestCouchbaseResource {
             System.out.println(row.toString());
         });
 
-        return "success!";
+        return "Success!";
     }
 }
 ----
 
-And test http://localhost:8080/couchbase/test.
+And test it at http://localhost:8080/couchbase/test.
 
 == Limitations
-In this early alpha release the configuration options are limited to the three shown above.
+In this early beta release the configuration options are limited to the three shown above.
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
