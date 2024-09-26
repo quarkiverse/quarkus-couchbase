@@ -11,7 +11,7 @@
 <div align="center">
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 [![Version](https://img.shields.io/maven-central/v/io.quarkiverse.couchbase/quarkus-couchbase?logo=apache-maven&style=flat-square)](https://search.maven.org/artifact/io.quarkiverse.couchbase/quarkus-couchbase)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
@@ -109,9 +109,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <table>
-  <tr>
-    <td align="center"><a href="https://programmatix.github.io/Words/projects"><img src="https://avatars.githubusercontent.com/u/795437?v=4?s=100" width="100px;" alt=""/><br /><sub><b>Graham Pople</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-couchbase/commits?author=programmatix" title="Code">💻</a> <a href="#maintenance-programmatix" title="Maintenance">🚧</a></td>
-  </tr>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://programmatix.github.io/Words/projects"><img src="https://avatars.githubusercontent.com/u/795437?v=4?s=100" width="100px;" alt="Graham Pople"/><br /><sub><b>Graham Pople</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-couchbase/commits?author=programmatix" title="Code">💻</a> <a href="#maintenance-programmatix" title="Maintenance">🚧</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/emilienbev"><img src="https://avatars.githubusercontent.com/u/44171454?v=4?s=100" width="100px;" alt="Emilien Bevierre"/><br /><sub><b>Emilien Bevierre</b></sub></a><br /><a href="https://github.com/quarkiverse/quarkus-couchbase/commits?author=emilienbev" title="Code">💻</a> <a href="#maintenance-emilienbev" title="Maintenance">🚧</a></td>
+    </tr>
+  </tbody>
 </table>
 
 <!-- markdownlint-restore -->
