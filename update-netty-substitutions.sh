@@ -21,8 +21,17 @@ echo "Found Quarkus version: $QUARKUS_VERSION"
 echo "1 - Cloning Quarkus"
 git clone --depth=1 --filter=blob:none --sparse --branch "$QUARKUS_VERSION" git@github.com:quarkusio/quarkus.git
 cd quarkus
-git sparse-checkout set extensions/netty
+git sparse-checkout set extensions/netty bom/application
 cd ..
+
+BOM_FILE="quarkus/bom/application/pom.xml"
+NETTY_VERSION=$(sed -n 's/.*<netty.version>\(.*\)<\/netty.version>.*/\1/p' "$BOM_FILE")
+
+if [[ -z "$NETTY_VERSION" ]]; then
+    echo "Could not find <netty.version> in the BOM file."
+    exit 1
+fi
+echo "The Netty target version is: $NETTY_VERSION"
 
 # Creating "nettyhandling" directories to keep pulled files separate from our extension's
 echo "2 - Creating nettyhandling directories"
@@ -56,6 +65,9 @@ sed -i '' 's/@ConfigRoot(name = "netty", phase = ConfigPhase.BUILD_TIME)/@Config
 echo "7 - Deleting code we don't want in NettyProcessor"
 ./deleteMethod.sh "public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask" "$DEST_DEPLOYMENT/NettyProcessor.java"
 ./deleteMethod.sh "LogCleanupFilterBuildItem cleanupMacDNSInLog" "$DEST_DEPLOYMENT/NettyProcessor.java"
+./deleteMethod.sh "static SslContext newClientContextInternal" "$DEST_RUNTIME/runtime/graal/NettySubstitutions.java"
+./deleteMethod.sh "final class Target_io_netty_handler_ssl_JdkSslClientContext" "$DEST_RUNTIME/runtime/graal/NettySubstitutions.java"
+
 
 #This isn't absolutely necessary, as Quarkus will optimise imports and remove unused/missing ones during compilation.
 echo "8 - Deleting missing import"
