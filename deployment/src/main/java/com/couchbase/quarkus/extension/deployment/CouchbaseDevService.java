@@ -17,9 +17,12 @@ package com.couchbase.quarkus.extension.deployment;
 
 import java.util.Map;
 
-import org.eclipse.microprofile.config.ConfigProvider;
+import jakarta.inject.Inject;
+
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.couchbase.CouchbaseService;
+
+import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
 
 import io.quarkus.deployment.IsNormal;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -37,6 +40,9 @@ public class CouchbaseDevService {
 
     static volatile RunningDevService devService;
 
+    @Inject
+    CouchbaseConfig config;
+
     @BuildStep
     DevServicesResultBuildItem startCouchBase(
             CuratedApplicationShutdownBuildItem closeBuildItem) {
@@ -52,12 +58,8 @@ public class CouchbaseDevService {
     }
 
     private QuarkusCouchbaseContainer startContainer() {
-        String userName = ConfigProvider.getConfig()
-                .getOptionalValue("quarkus.couchbase.username", String.class).orElse("Administrator");
-        String password = ConfigProvider.getConfig()
-                .getOptionalValue("quarkus.couchbase.password", String.class).orElse("password");
-        String version = ConfigProvider.getConfig().getValue("quarkus.couchbase.version", String.class);
-        QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(version, userName, password);
+        QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(config.version(), config.username(),
+                config.password());
         couchbase.start();
         return couchbase;
     }
