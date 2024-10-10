@@ -64,7 +64,7 @@
     <quarkus.version>3.15.1</quarkus.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
     <!--  Careful about updating this. Newer versions of the SDK may not compile natively.  -->
-    <couchbase.client.version>3.7.3</couchbase.client.version>
+    <couchbase.client.version>3.7.4</couchbase.client.version>
   </properties>
   <dependencyManagement>
     <dependencies>
