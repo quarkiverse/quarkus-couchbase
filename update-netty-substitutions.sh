@@ -29,9 +29,9 @@ NETTY_VERSION=$(sed -n 's/.*<netty.version>\(.*\)<\/netty.version>.*/\1/p' "$BOM
 
 if [[ -z "$NETTY_VERSION" ]]; then
     echo "Could not find <netty.version> in the BOM file."
-    exit 1
+else
+    echo "The Netty target version is: $NETTY_VERSION"
 fi
-echo "The Netty target version is: $NETTY_VERSION"
 
 # Creating "nettyhandling" directories to keep pulled files separate from our extension's
 echo "2 - Creating nettyhandling directories"
