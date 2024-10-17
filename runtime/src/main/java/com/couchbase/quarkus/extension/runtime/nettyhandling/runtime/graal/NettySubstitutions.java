@@ -14,6 +14,7 @@ import java.security.KeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Provider;
+import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
@@ -163,7 +164,6 @@ final class Target_io_netty_handler_ssl_OpenSsl {
 
 @TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslServerContext")
 final class Target_io_netty_handler_ssl_JdkSslServerContext {
-
     @Alias
     Target_io_netty_handler_ssl_JdkSslServerContext(Provider provider,
             X509Certificate[] trustCertCollection, TrustManagerFactory trustManagerFactory,
@@ -171,22 +171,7 @@ final class Target_io_netty_handler_ssl_JdkSslServerContext {
             KeyManagerFactory keyManagerFactory, Iterable<String> ciphers, CipherSuiteFilter cipherFilter,
             ApplicationProtocolConfig apn, long sessionCacheSize, long sessionTimeout,
             ClientAuth clientAuth, String[] protocols, boolean startTls,
-            String keyStore)
-            throws SSLException {
-    }
-}
-
-@TargetClass(className = "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
-final class Target_io_netty_handler_ssl_JdkSslClientContext {
-
-    @Alias
-    Target_io_netty_handler_ssl_JdkSslClientContext(Provider sslContextProvider, X509Certificate[] trustCertCollection,
-            TrustManagerFactory trustManagerFactory, X509Certificate[] keyCertChain, PrivateKey key,
-            String keyPassword, KeyManagerFactory keyManagerFactory, Iterable<String> ciphers,
-            CipherSuiteFilter cipherFilter, ApplicationProtocolConfig apn, String[] protocols,
-            long sessionCacheSize, long sessionTimeout, String keyStoreType)
-            throws SSLException {
-
+            SecureRandom secureRandom, String keyStore) throws SSLException {
     }
 }
 
@@ -228,10 +213,12 @@ final class Target_io_netty_handler_ssl_SslContext {
     @Substitute
     static SslContext newServerContextInternal(SslProvider provider, Provider sslContextProvider,
             X509Certificate[] trustCertCollection, TrustManagerFactory trustManagerFactory,
-            X509Certificate[] keyCertChain,
-            PrivateKey key, String keyPassword, KeyManagerFactory keyManagerFactory, Iterable<String> ciphers,
-            CipherSuiteFilter cipherFilter, ApplicationProtocolConfig apn, long sessionCacheSize, long sessionTimeout,
-            ClientAuth clientAuth, String[] protocols, boolean startTls, boolean enableOcsp, String keyStoreType,
+            X509Certificate[] keyCertChain, PrivateKey key, String keyPassword,
+            KeyManagerFactory keyManagerFactory, Iterable<String> ciphers,
+            CipherSuiteFilter cipherFilter, ApplicationProtocolConfig apn,
+            long sessionCacheSize, long sessionTimeout, ClientAuth clientAuth,
+            String[] protocols, boolean startTls, boolean enableOcsp,
+            SecureRandom secureRandom, String keyStoreType,
             Map.Entry<SslContextOption<?>, Object>... ctxOptions) throws SSLException {
         if (enableOcsp) {
             throw new IllegalArgumentException("OCSP is not supported with this SslProvider: " + provider);
@@ -239,24 +226,7 @@ final class Target_io_netty_handler_ssl_SslContext {
         return (SslContext) (Object) new Target_io_netty_handler_ssl_JdkSslServerContext(sslContextProvider,
                 trustCertCollection, trustManagerFactory, keyCertChain, key, keyPassword,
                 keyManagerFactory, ciphers, cipherFilter, apn, sessionCacheSize, sessionTimeout,
-                clientAuth, protocols, startTls, keyStoreType);
-    }
-
-    @Substitute
-    static SslContext newClientContextInternal(SslProvider provider, Provider sslContextProvider,
-            X509Certificate[] trustCert,
-            TrustManagerFactory trustManagerFactory, X509Certificate[] keyCertChain, PrivateKey key, String keyPassword,
-            KeyManagerFactory keyManagerFactory, Iterable<String> ciphers, CipherSuiteFilter cipherFilter,
-            ApplicationProtocolConfig apn, String[] protocols, long sessionCacheSize, long sessionTimeout,
-            boolean enableOcsp,
-            String keyStoreType, Map.Entry<SslContextOption<?>, Object>... options) throws SSLException {
-        if (enableOcsp) {
-            throw new IllegalArgumentException("OCSP is not supported with this SslProvider: " + provider);
-        }
-        return (SslContext) (Object) new Target_io_netty_handler_ssl_JdkSslClientContext(sslContextProvider,
-                trustCert, trustManagerFactory, keyCertChain, key, keyPassword,
-                keyManagerFactory, ciphers, cipherFilter, apn, protocols, sessionCacheSize,
-                sessionTimeout, keyStoreType);
+                clientAuth, protocols, startTls, secureRandom, keyStoreType);
     }
 
 }
@@ -539,7 +509,8 @@ final class Target_io_netty_handler_codec_http2_DelegatingDecompressorFrameListe
                 return null;
             } else {
                 ZlibWrapper wrapper = this.strict ? ZlibWrapper.ZLIB : ZlibWrapper.ZLIB_OR_NONE;
-                return new EmbeddedChannel(ctx.channel().id(), ctx.channel().metadata().hasDisconnect(), ctx.channel().config(),
+                return new EmbeddedChannel(ctx.channel().id(), ctx.channel().metadata().hasDisconnect(),
+                        ctx.channel().config(),
                         new ChannelHandler[] { ZlibCodecFactory.newZlibDecoder(wrapper) });
             }
         } else {
@@ -609,6 +580,14 @@ final class Target_SslContext {
             InvalidAlgorithmParameterException, KeyException, IOException {
         return null;
     }
+}
+
+@TargetClass(className = "com.couchbase.client.core.deps.io.netty.util.internal.shaded.org.jctools.util.UnsafeLongArrayAccess")
+final class Target_io_netty_util_internal_shaded_org_jctools_util_UnsafeRefArrayAccess {
+
+    @Alias
+    @RecomputeFieldValue(kind = RecomputeFieldValue.Kind.ArrayIndexShift, declClass = Object[].class)
+    public static int LONG_ELEMENT_SHIFT;
 }
 
 class IsBouncyNotThere implements BooleanSupplier {
