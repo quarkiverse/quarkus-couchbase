@@ -15,10 +15,7 @@
  */
 package com.couchbase.quarkus.extension.deployment;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.testcontainers.couchbase.CouchbaseContainer;
@@ -36,19 +33,21 @@ import io.quarkus.deployment.dev.devservices.GlobalDevServicesConfig;
  * This class provides a Quarkus DevService for Couchbase. The dev service provides all non enterprise features of Couchbase.
  */
 @BuildSteps(onlyIfNot = IsNormal.class, onlyIf = GlobalDevServicesConfig.Enabled.class)
-
 public class CouchbaseDevService {
 
-    static volatile List<RunningDevService> devServices = new ArrayList<>();
+    static volatile RunningDevService devService;
 
     @BuildStep
-    List<DevServicesResultBuildItem> startCouchBase(
+    DevServicesResultBuildItem startCouchBase(
             CuratedApplicationShutdownBuildItem closeBuildItem) {
+        if (devService != null) {
+            return devService.toBuildItem();
+        }
         QuarkusCouchbaseContainer couchbase = startContainer();
-        devServices.add(new RunningDevService(CouchbaseQuarkusExtensionProcessor.FEATURE,
-                couchbase.getContainerId(), couchbase::close, Map.of()));
+        devService = new RunningDevService(CouchbaseQuarkusExtensionProcessor.FEATURE,
+                couchbase.getContainerId(), couchbase::close, Map.of());
         closeBuildItem.addCloseTask(couchbase::close, true);
-        return devServices.stream().map(RunningDevService::toBuildItem).collect(Collectors.toList());
+        return devService.toBuildItem();
 
     }
 
