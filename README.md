@@ -24,15 +24,13 @@ This extension is currently in beta status.  It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
 - Configuring the Cluster through `application.properties`.  Currently, a minimal set of configuration options is provided.
-- Mandrel/GraalVM/native-image.
 - A dev service that starts a Couchbase server in a Docker container. With this you can develop your Quarkus app without having to install Couchbase on your machine.
 
 Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
 
 ## Native Image
-The extension supports native mode and has been tested with Mandrel 24.0.2.r22 and Graal 22.0.2.
-
-It is recommended to use these versions or the latest for both.
+> [!IMPORTANT]
+> While the extension compiles natively, there are known issues with the produced runner which we are actively working to resolve.
 
 ## Usage
 Add it to your project:
@@ -40,7 +38,7 @@ Add it to your project:
 <dependency>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>1.0.0.Beta1</version>
+  <version>1.0.0.Beta2</version>
 </dependency>
 ```
 
