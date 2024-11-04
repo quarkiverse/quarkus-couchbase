@@ -50,7 +50,39 @@ public class CouchbaseProcessor {
         return ReflectiveClassBuildItem.builder(
                 new String[] {
                         "com.couchbase.client.core.logging.RedactableArgument",
-                        "com.couchbase.client.core.msg.CancellationReason"
+                        "com.couchbase.client.core.msg.CancellationReason",
+                        "com.couchbase.client.core.api.manager.search.CoreSearchIndex",
+                        "com.couchbase.client.java.manager.search.SearchIndex",
+                        //Search
+                        //Result
+                        "com.couchbase.client.core.api.search.result.CoreAbstractSearchFacetResult",
+                        "com.couchbase.client.core.api.search.result.CoreDateRangeSearchFacetResult",
+                        "com.couchbase.client.core.api.search.result.CoreNumericRangeSearchFacetResult",
+                        "com.couchbase.client.core.api.search.result.CoreReactiveSearchResult",
+                        "com.couchbase.client.core.api.search.result.CoreSearchDateRange",
+                        "com.couchbase.client.core.api.search.result.CoreSearchFacetResult",
+                        "com.couchbase.client.core.api.search.result.CoreSearchMetrics",
+                        "com.couchbase.client.core.api.search.result.CoreSearchNumericRange",
+                        "com.couchbase.client.core.api.search.result.CoreSearchResult",
+                        "com.couchbase.client.core.api.search.result.CoreSearchRow",
+                        "com.couchbase.client.core.api.search.result.CoreSearchRowLocation",
+                        "com.couchbase.client.core.api.search.result.CoreSearchRowLocations",
+                        "com.couchbase.client.core.api.search.result.CoreSearchStatus",
+                        "com.couchbase.client.core.api.search.result.CoreSearchTermRange",
+                        "com.couchbase.client.core.api.search.result.CoreTermSearchFacetResult",
+                        //Facet
+                        "com.couchbase.client.core.api.search.facet.CoreDateRange",
+                        "com.couchbase.client.core.api.search.facet.CoreDateRangeFacet",
+                        "com.couchbase.client.core.api.search.facet.CoreNumericRange",
+                        "com.couchbase.client.core.api.search.facet.CoreNumericRangeFacet",
+                        "com.couchbase.client.core.api.search.facet.CoreSearchFacet",
+                        "com.couchbase.client.core.api.search.facet.CoreTermFacet",
+                        //Vector
+                        "com.couchbase.client.core.api.search.vector.CoreVector",
+                        "com.couchbase.client.core.api.search.vector.CoreVectorQuery",
+                        "com.couchbase.client.core.api.search.vector.CoreVectorQueryCombination",
+                        "com.couchbase.client.core.api.search.vector.CoreVectorSearch",
+                        "com.couchbase.client.core.api.search.vector.CoreVectorSearchOptions"
                 }).fields().methods().build();
     }
 }
