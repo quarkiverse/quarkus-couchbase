@@ -26,6 +26,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 
 public class CouchbaseProcessor {
 
@@ -42,5 +43,14 @@ public class CouchbaseProcessor {
                 .setRuntimeInit()
                 .done());
 
+    }
+
+    @BuildStep
+    ReflectiveClassBuildItem reflection() {
+        return ReflectiveClassBuildItem.builder(
+                new String[] {
+                        "com.couchbase.client.core.logging.RedactableArgument",
+                        "com.couchbase.client.core.msg.CancellationReason"
+                }).fields().methods().build();
     }
 }
