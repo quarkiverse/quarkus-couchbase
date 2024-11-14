@@ -26,12 +26,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.jboss.logging.Logger;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import com.couchbase.client.core.error.BucketExistsException;
 import com.couchbase.client.core.error.CasMismatchException;
 import com.couchbase.client.core.error.DocumentNotFoundException;
+import com.couchbase.client.core.util.ConsistencyUtil;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.Collection;
@@ -73,14 +76,32 @@ public class DevServiceTest {
 
     private static String keyspace = String.join(".", BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
 
+    private static final Logger logger = Logger.getLogger(DevServiceTest.class);
+
     @BeforeAll
     void createAndGetKeyspace() {
+        var isKeyspacePresent = false;
+
+        // Checks if the test bucket already exists, assuming the
+        // scope and collection must exist with it. Relevant for continuous testing.
+        try {
+            cluster.buckets().createBucket(BucketSettings.create(BUCKET_NAME));
+        } catch (BucketExistsException exists) {
+            isKeyspacePresent = true;
+            logger.info("Bucket already exists, skipping keyspace creation.");
+        }
         // Create Bucket, Scope and Collection
-        cluster.buckets().createBucket(BucketSettings.create(BUCKET_NAME));
-        bucket = cluster.bucket(BUCKET_NAME);
-        bucket.waitUntilReady(Duration.ofSeconds(20));
-        bucket.collections().createScope(SCOPE_NAME);
-        bucket.collections().createCollection(SCOPE_NAME, COLLECTION_NAME);
+        if (!isKeyspacePresent) {
+            ConsistencyUtil.waitUntilBucketPresent(cluster.core(), BUCKET_NAME);
+            bucket = cluster.bucket(BUCKET_NAME);
+            bucket.waitUntilReady(Duration.ofSeconds(20));
+            bucket.collections().createScope(SCOPE_NAME);
+            ConsistencyUtil.waitUntilScopePresent(cluster.core(), BUCKET_NAME, SCOPE_NAME);
+            bucket.collections().createCollection(SCOPE_NAME, COLLECTION_NAME);
+            ConsistencyUtil.waitUntilCollectionPresent(cluster.core(), BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
+        } else {
+            bucket = cluster.bucket(BUCKET_NAME);
+        }
 
         scope = bucket.scope(SCOPE_NAME);
         collection = scope.collection(COLLECTION_NAME);
