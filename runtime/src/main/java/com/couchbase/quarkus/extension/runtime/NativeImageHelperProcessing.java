@@ -1,6 +1,5 @@
 package com.couchbase.quarkus.extension.runtime;
 
-import java.lang.annotation.Native;
 import java.util.Queue;
 
 import com.couchbase.client.core.deps.org.jctools.queues.atomic.unpadded.MpscAtomicUnpaddedArrayQueue;
