@@ -13,7 +13,7 @@ public class NativeImageHelperProcessing {
 @TargetClass(value = NativeImageHelper.class)
 final class Target_NativeImageHelper {
     @Substitute
-    public static <T> Queue<T> createSizedQueue(int capacity) {
+    public static <T> Queue<T> createMpscArrayQueue(int capacity) {
         return new MpscAtomicUnpaddedArrayQueue<>(capacity);
     }
 }

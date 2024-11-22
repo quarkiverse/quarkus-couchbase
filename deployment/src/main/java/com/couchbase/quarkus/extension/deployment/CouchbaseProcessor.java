@@ -49,6 +49,20 @@ public class CouchbaseProcessor {
     ReflectiveClassBuildItem reflection() {
         return ReflectiveClassBuildItem.builder(
                 new String[] {
+                        "com.couchbase.client.core.manager.bucket.CoreStorageBackend",
+                        "com.couchbase.client.core.config.BucketType",
+                        "com.couchbase.client.core.manager.bucket.CoreConflictResolutionType",
+                        "com.couchbase.client.core.config.CollectionsManifestCollection",
+                        "com.couchbase.client.core.config.CollectionsManifestScope",
+                        "com.couchbase.client.core.config.CollectionsManifest",
+                        "com.couchbase.client.core.error.ErrorCodeAndMessage",
+                        "com.couchbase.client.core.msg.BaseResponse",
+                        "com.couchbase.client.core.endpoint.http.CoreHttpResponse",
+                        "com.couchbase.client.core.endpoint.http.CoreCommonOptions",
+                        "com.couchbase.client.core.manager.bucket.BucketSettings",
+                        "com.couchbase.client.java.manager.bucket.BucketSettings",
+                        "com.couchbase.client.core.manager.bucket.CoreBucketSettings",
+                        "com.couchbase.client.core.classic.manager.CoreBucketSettingsJson",
                         "com.couchbase.client.core.logging.RedactableArgument",
                         "com.couchbase.client.core.msg.CancellationReason",
                         "com.couchbase.client.core.api.manager.search.CoreSearchIndex",
