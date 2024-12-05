@@ -19,6 +19,7 @@ import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
 import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
 @ConfigMapping(prefix = "quarkus.couchbase")
 @ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
@@ -47,4 +48,11 @@ public interface CouchbaseConfig {
      */
     @WithDefault("latest")
     String version();
+
+    /**
+     * Whether to enable health checks or not.
+     */
+    @WithDefault("true")
+    @WithName("health.enabled")
+    boolean healthEnabled();
 }

@@ -184,21 +184,21 @@ class NettyProcessor {
         builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent")
                 .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent0");
 
-        if (QuarkusClassLoader
-                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
-            builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")
-                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.Unpooled")
-                    .addRuntimeReinitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
-                    .addRuntimeReinitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf");
-
-            if (QuarkusClassLoader
-                    .isClassPresentAtRuntime("org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload")) {
-                builder.addRuntimeReinitializedClass(
-                        "org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload");
-            }
-        }
+        //        if (QuarkusClassLoader
+        //                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
+        //            builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")
+        //                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.Unpooled")
+        //                    .addRuntimeReinitializedClass(
+        //                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
+        //                    .addRuntimeReinitializedClass(
+        //                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf");
+        //
+        //            if (QuarkusClassLoader
+        //                    .isClassPresentAtRuntime("org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload")) {
+        //                builder.addRuntimeReinitializedClass(
+        //                        "org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload");
+        //            }
+        //        }
 
         return builder //TODO: make configurable
                 .build();
