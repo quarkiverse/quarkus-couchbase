@@ -27,6 +27,7 @@ import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
 public class CouchbaseProcessor {
 
@@ -46,9 +47,19 @@ public class CouchbaseProcessor {
     }
 
     @BuildStep
+    HealthBuildItem addHealthCheck(CouchbaseConfig couchbaseConfig) {
+        return new HealthBuildItem("com.couchbase.quarkus.extension.runtime.health.CouchbaseReadyCheck",
+                couchbaseConfig.healthEnabled());
+    }
+
+    @BuildStep
     ReflectiveClassBuildItem reflection() {
         return ReflectiveClassBuildItem.builder(
                 new String[] {
+                        //Transactions
+                        //Error
+                        "com.couchbase.client.core.transaction.components.ActiveTransactionRecordEntry",
+                        "com.couchbase.client.core.transaction.components.DocRecord",
                         //Bucket Manager
                         "com.couchbase.client.core.manager.bucket.CoreCompressionMode",
                         "com.couchbase.client.core.manager.bucket.CoreEvictionPolicyType",
