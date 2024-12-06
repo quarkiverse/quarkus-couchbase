@@ -47,6 +47,7 @@ public interface CouchbaseConfig {
      * Default is latest, see https://hub.docker.com/_/couchbase for available versions.
      */
     @WithDefault("latest")
+    @WithName(("devservices.version"))
     String version();
 
     /**

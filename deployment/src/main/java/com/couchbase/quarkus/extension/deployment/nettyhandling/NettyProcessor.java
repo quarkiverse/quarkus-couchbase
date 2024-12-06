@@ -20,6 +20,7 @@ import com.couchbase.quarkus.extension.runtime.nettyhandling.MainEventLoopGroup;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.NettyRecorder;
 
+import io.netty.resolver.dns.DnsServerAddressStreamProviders;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
@@ -29,9 +30,11 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageSystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.UnsafeAccessedFieldBuildItem;
 import io.quarkus.deployment.logging.LogCleanupFilterBuildItem;
 
@@ -103,39 +106,65 @@ class NettyProcessor {
                 // Use small chunks to avoid a lot of wasted space. Default is 16mb * arenas (derived from core count)
                 // Since buffers are cached to threads, the malloc overhead is temporary anyway
                 .addNativeImageSystemProperty("com.couchbase.client.core.deps.io.netty.allocator.maxOrder", maxOrder)
-                .addRuntimeInitializedClass(
-                        "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkNpnApplicationProtocolNegotiator")
+                // Runtime initialize to respect com.couchbase.client.core.deps.io.netty.handler.ssl.conscrypt.useBufferAllocator
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ConscryptAlpnSslEngine")
+                // Runtime initialize due to the use of tcnative in the static initializers?
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslEngine")
+                // Runtime initialize to respect run-time provided values of the following properties:
+                // - com.couchbase.client.core.deps.io.netty.handler.ssl.openssl.bioNonApplicationBufferSize
+                // - com.couchbase.client.core.deps.io.netty.handler.ssl.openssl.useTasks
+                // - jdk.tls.client.enableSessionTicketExtension
+                // - com.couchbase.client.core.deps.io.netty.handler.ssl.openssl.sessionCacheServer
+                // - com.couchbase.client.core.deps.io.netty.handler.ssl.openssl.sessionCacheClient
+                // - jdk.tls.ephemeralDHKeySize
                 .addRuntimeInitializedClass(
                         "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslContext")
-                .addRuntimeInitializedClass(
-                        "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslClientContext")
+                // .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslClientContext")
+                // Runtime initialize to respect run-time provided values of the following properties:
+                // - keystore.type
+                // - ssl.KeyManagerFactory.algorithm
+                // - ssl.TrustManagerFactory.algorithm
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslServerContext")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
+                // .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.ssl.JdkSslClientContext")
+                // Runtime initialize to prevent embedding SecureRandom instances in the native image
                 .addRuntimeInitializedClass(
                         "com.couchbase.client.core.deps.io.netty.handler.ssl.util.ThreadLocalInsecureRandom")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil$HexUtil")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.PooledByteBufAllocator")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufAllocator")
-                .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil")
-                // The default channel id uses the process id, it should not be cached in the native image.
+                // The default channel id uses the process id, it should not be cached in the native image. This way we
+                // also respect the run-time provided value of the com.couchbase.client.core.deps.io.netty.processId property, com.couchbase.client.core.deps.io.netty.machineId
+                // property is being hardcoded in setNettyMachineId method
                 .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.DefaultChannelId")
+                // Disable leak detection by default, it can still be enabled via
+                // com.couchbase.client.core.deps.io.netty.util.ResourceLeakDetector.setLevel method
                 .addNativeImageSystemProperty("com.couchbase.client.core.deps.io.netty.leakDetection.level", "DISABLED");
 
         if (QuarkusClassLoader
                 .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectEncoder")) {
             builder
+                    // Runtime initialize due to transitive use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class
+                    // when initializing CRLF_BUF and ZERO_CRLF_CRLF_BUF
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectEncoder")
                     .addRuntimeInitializedClass(
                             "com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.extensions.compression.DeflateDecoder")
                     .addRuntimeInitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdOptions")
-                    .addRuntimeInitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdConstants")
-                    .addRuntimeInitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.compression.BrotliOptions");
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.websocketx.WebSocket00FrameEncoder");
+            // Zstd is an optional dependency, runtime initialize to avoid IllegalStateException when zstd is not
+            // available. This will result in a runtime ClassNotFoundException if the user tries to use zstd.
+            if (!QuarkusClassLoader.isClassPresentAtRuntime("com.github.luben.zstd.Zstd")) {
+                builder.addRuntimeInitializedClass(
+                        "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdOptions")
+                        .addRuntimeInitializedClass(
+                                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZstdConstants");
+            }
+            // Brotli is an optional dependency, we should only runtime initialize BrotliOptions to avoid
+            // IllegalStateException when brotli (e.g. com.aayushatharva.brotli4j.Brotli4jLoader) is not available.
+            // This will result in a runtime ClassNotFoundException if the user tries to use Brotli.
+            // Due to https://github.com/quarkusio/quarkus/issues/43662 we cannot do this yet though so we always enable
+            // runtime initialization of BrotliOptions if the class is present
+            if (QuarkusClassLoader.isClassPresentAtRuntime(
+                    "com.couchbase.client.core.deps.io.netty.handler.codec.compression.BrotliOptions")) {
+                builder.addRuntimeInitializedClass(
+                        "com.couchbase.client.core.deps.io.netty.handler.codec.compression.BrotliOptions");
+            }
         } else {
             log.debug("Not registering Netty HTTP classes as they were not found");
         }
@@ -143,58 +172,122 @@ class NettyProcessor {
         if (QuarkusClassLoader
                 .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")) {
             builder
+                    // Runtime initialize due to the transitive use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent
+                    // class in the static initializers
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil")
-                    .addRuntimeInitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ClientUpgradeCodec")
                     .addRuntimeInitializedClass(
                             "com.couchbase.client.core.deps.io.netty.handler.codec.http2.DefaultHttp2FrameWriter")
                     .addRuntimeInitializedClass(
-                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ConnectionHandler");
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ConnectionHandler")
+                    // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2CodecUtil
+                    .addRuntimeInitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http2.Http2ClientUpgradeCodec");
         } else {
             log.debug("Not registering Netty HTTP2 classes as they were not found");
         }
 
         if (QuarkusClassLoader.isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.channel.unix.UnixChannel")) {
+            // Runtime initialize to avoid embedding quite a few Strings in the image heap
             builder.addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.unix.Errors")
+                    // Runtime initialize due to the use of AtomicIntegerFieldUpdater?
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.unix.FileDescriptor")
+                    // Runtime initialize due to the use of Buffer.addressSize() in the static initializers
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.unix.IovArray")
+                    // Runtime initialize due to the use of native methods in the static initializers?
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.unix.Limits");
         } else {
             log.debug("Not registering Netty native unix classes as they were not found");
         }
 
         if (QuarkusClassLoader.isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.channel.epoll.EpollMode")) {
+            // Runtime initialize due to machine dependent native methods being called in static initializer and to
+            // respect the run-time provided value of com.couchbase.client.core.deps.io.netty.transport.noNative
             builder.addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.epoll.Epoll")
+                    // Runtime initialize due to machine dependent native methods being called in static initializer
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.epoll.EpollEventArray")
+                    // Runtime initialize due to dependency on Epoll and to respect the run-time provided value of
+                    // com.couchbase.client.core.deps.io.netty.channel.epoll.epollWaitThreshold
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.epoll.EpollEventLoop")
+                    // Runtime initialize due to InetAddress fields, dependencies on native methods and to transitively
+                    // respect a number of properties, e.g. java.nio.channels.spi.SelectorProvider
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.epoll.Native");
         } else {
             log.debug("Not registering Netty native epoll classes as they were not found");
         }
 
         if (QuarkusClassLoader.isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.channel.kqueue.AcceptFilter")) {
+            // Runtime initialize due to machine dependent native methods being called in static initializer and to
+            // respect the run-time provided value of com.couchbase.client.core.deps.io.netty.transport.noNative
             builder.addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.kqueue.KQueue")
+                    // Runtime initialize due to machine dependent native methods being called in static initializers
                     .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.kqueue.KQueueEventArray")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.kqueue.KQueueEventLoop")
-                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.kqueue.Native");
+                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.kqueue.Native")
+                    // Runtime initialize due to dependency on Epoll and the use of AtomicIntegerFieldUpdater?
+                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.channel.kqueue.KQueueEventLoop");
         } else {
             log.debug("Not registering Netty native kqueue classes as they were not found");
         }
 
+        // Runtime initialize due to platform dependent initialization and to respect the run-time provided value of the
+        // properties:
+        // - com.couchbase.client.core.deps.io.netty.maxDirectMemory
+        // - com.couchbase.client.core.deps.io.netty.uninitializedArrayAllocationThreshold
+        // - com.couchbase.client.core.deps.io.netty.noPreferDirect
+        // - com.couchbase.client.core.deps.io.netty.osClassifiers
+        // - com.couchbase.client.core.deps.io.netty.tmpdir
+        // - java.io.tmpdir
+        // - com.couchbase.client.core.deps.io.netty.bitMode
+        // - sun.arch.data.model
+        // - com.ibm.vm.bitmode
         builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent")
+                // Similarly for properties:
+                // - com.couchbase.client.core.deps.io.netty.noUnsafe
+                // - sun.misc.unsafe.memory.access
+                // - com.couchbase.client.core.deps.io.netty.tryUnsafe
+                // - org.jboss.netty.tryUnsafe
+                // - com.couchbase.client.core.deps.io.netty.tryReflectionSetAccessible
                 .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent0");
 
         //        if (QuarkusClassLoader
         //                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
+        //            // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class
         //            builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")
         //                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.Unpooled")
+        //                    // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.buffer.Unpooled
         //                    .addRuntimeReinitializedClass(
         //                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
         //                    .addRuntimeReinitializedClass(
-        //                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf");
+        //                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf")
+        //                    // Runtime initialize to avoid embedding quite a few Strings in the image heap
+        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil$HexUtil")
+        //                    // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class in the
+        //                    // static initializers and to respect the run-time provided value of the following properties:
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.directMemoryCacheAlignment
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.pageSize
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.maxOrder
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.numHeapArenas
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.numDirectArenas
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.smallCacheSize
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.normalCacheSize
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.maxCachedBufferCapacity
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.cacheTrimInterval
+        //                    // - com.couchbase.client.core.deps.io.netty.allocation.cacheTrimIntervalMillis
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.cacheTrimIntervalMillis
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.useCacheForAllThreads
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.maxCachedByteBuffersPerChunk
+        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.PooledByteBufAllocator")
+        //                    // Runtime initialize due to the use of ByteBufUtil.DEFAULT_ALLOCATOR in the static initializers
+        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufAllocator")
+        //                    // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class in the
+        //                    // static initializers and to respect the run-time provided value of the following properties:
+        //                    // - com.couchbase.client.core.deps.io.netty.allocator.type
+        //                    // - com.couchbase.client.core.deps.io.netty.threadLocalDirectBufferSize
+        //                    // - com.couchbase.client.core.deps.io.netty.maxThreadLocalCharBufferSize
+        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil");
         //
         //            if (QuarkusClassLoader
         //                    .isClassPresentAtRuntime("org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload")) {
+        //                // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.buffer.Unpooled
         //                builder.addRuntimeReinitializedClass(
         //                        "org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload");
         //            }
@@ -260,6 +353,12 @@ class NettyProcessor {
     }
 
     @BuildStep
+    public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() {
+        return new RuntimeReinitializedClassBuildItem(
+                "com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.graal.Holder_io_netty_util_concurrent_ScheduledFutureTask");
+    }
+
+    @BuildStep
     public List<UnsafeAccessedFieldBuildItem> unsafeAccessedFields() {
         return Arrays.asList(
                 new UnsafeAccessedFieldBuildItem("sun.nio.ch.SelectorImpl", "selectedKeys"),
@@ -289,6 +388,19 @@ class NettyProcessor {
      *
      * @return the log cleanup item removing the message
      */
+    @BuildStep
+    LogCleanupFilterBuildItem cleanupMacDNSInLog() {
+        return new LogCleanupFilterBuildItem(DnsServerAddressStreamProviders.class.getName(), Level.WARN,
+                "Can not find com.couchbase.client.core.deps.io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath");
+    }
+
+    /**
+     * `Version.identify()` in netty-common uses the resource to determine the version of netty.
+     */
+    @BuildStep
+    NativeImageResourceBuildItem nettyVersions() {
+        return new NativeImageResourceBuildItem("META-INF/com.couchbase.client.core.deps.io.netty.versions.properties");
+    }
 
     private String calculateMaxOrder(OptionalInt userConfig, List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems,
             boolean shouldWarn) {
