@@ -17,6 +17,8 @@ package com.couchbase.quarkus.extension.deployment;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
+import com.couchbase.client.core.api.kv.CoreKvBinaryOps;
+import com.couchbase.client.core.api.kv.CoreKvOps;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
 import com.couchbase.quarkus.extension.runtime.CouchbaseRecorder;
@@ -26,6 +28,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
@@ -50,6 +53,13 @@ public class CouchbaseProcessor {
     HealthBuildItem addHealthCheck(CouchbaseConfig couchbaseConfig) {
         return new HealthBuildItem("com.couchbase.quarkus.extension.runtime.health.CouchbaseReadyCheck",
                 couchbaseConfig.healthEnabled());
+    }
+
+    @BuildStep
+    NativeImageProxyDefinitionBuildItem kvProxies() {
+        return new NativeImageProxyDefinitionBuildItem(
+                CoreKvOps.class.getName(),
+                CoreKvBinaryOps.class.getName());
     }
 
     @BuildStep
