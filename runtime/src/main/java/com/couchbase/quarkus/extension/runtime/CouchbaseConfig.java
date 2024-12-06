@@ -56,4 +56,12 @@ public interface CouchbaseConfig {
     @WithDefault("true")
     @WithName("health.enabled")
     boolean healthEnabled();
+
+    /**
+     * The timeout for the Ready health check in secondss
+     * Simply put: "How long you are willing to wait to know the cluster is ready or not".
+     */
+    @WithDefault("3")
+    @WithName("health.readiness.timeout")
+    int readinessTimeout();
 }
