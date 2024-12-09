@@ -17,13 +17,41 @@
 package com.couchbase.quarkus.extension.it;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+
+import com.couchbase.client.java.Cluster;
 
 @Path("/couchbase-quarkus-extension")
 @ApplicationScoped
 public class CouchbaseQuarkusExtensionResource {
     // add some rest methods here
+    @Inject
+    Cluster cluster;
+
+    @GET
+    @Path("/clusterCheck")
+    public String clusterCheck() {
+        var query = cluster.query("select 1 as test");
+        return query.rowsAsObject().get(0).toString();
+    }
+
+    @GET
+    @Path("/pingReport")
+    public String clusterPing() {
+        var ping = cluster.ping();
+        return ping.exportToJson();
+    }
+
+    @GET
+    @Path("/kvCheck")
+    public String kvCheck() {
+        var collection = cluster.bucket("default").scope("_default").collection("_default");
+        collection.upsert("QuarkusTestDoc", "test success");
+        var getResult = collection.get("QuarkusTestDoc");
+        return getResult.toString();
+    }
 
     @GET
     public String hello() {
