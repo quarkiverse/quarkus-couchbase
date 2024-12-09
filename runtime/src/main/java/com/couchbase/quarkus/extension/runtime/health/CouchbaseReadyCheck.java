@@ -1,5 +1,7 @@
 package com.couchbase.quarkus.extension.runtime.health;
 
+import static io.smallrye.mutiny.helpers.spies.Spy.onFailure;
+
 import java.time.Duration;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -40,7 +42,7 @@ public class CouchbaseReadyCheck implements AsyncHealthCheck {
         return Uni.createFrom()
                 .completionStage(cluster.reactive().waitUntilReady(Duration.ofSeconds(config.readinessTimeout()),
                         WaitUntilReadyOptions.waitUntilReadyOptions().desiredState(ClusterState.ONLINE)
-                                .serviceTypes(new ServiceType[] { ServiceType.MANAGER, ServiceType.KV }))
+                                .serviceTypes(ServiceType.KV))
                         .toFuture())
                 .onItem().transform(ignore -> builder.up().withData("cluster", "ready").build())
                 .onFailure().recoverWithItem(
