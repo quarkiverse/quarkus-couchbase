@@ -58,6 +58,7 @@ public class CouchbaseReadyCheck implements AsyncHealthCheck {
 
     /**
      * Wait for a Cluster config, then pings the GCCCP connections on each node.
+     *
      * @return A HealthCheckResponse.
      */
     @Override
