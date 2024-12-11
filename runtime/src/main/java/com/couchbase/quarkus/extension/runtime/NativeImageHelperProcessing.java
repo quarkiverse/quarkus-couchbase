@@ -15,21 +15,20 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import java.util.function.Supplier;
+import java.util.Queue;
 
-import com.couchbase.client.java.Cluster;
-import com.couchbase.client.java.ClusterOptions;
+import com.couchbase.client.core.deps.org.jctools.queues.atomic.unpadded.MpscAtomicUnpaddedArrayQueue;
+import com.couchbase.client.core.util.NativeImageHelper;
+import com.oracle.svm.core.annotate.Substitute;
+import com.oracle.svm.core.annotate.TargetClass;
 
-import io.quarkus.runtime.annotations.Recorder;
+public class NativeImageHelperProcessing {
+}
 
-@Recorder
-public class CouchbaseRecorder {
-
-    public Supplier<Cluster> getCluster(CouchbaseConfig config) {
-        return () -> Cluster.connect(config.connectionString(), config.username(), config.password());
-    }
-
-    public Supplier<Cluster> getCluster(CouchbaseConfig config, ClusterOptions clusterOptions) {
-        return () -> Cluster.connect(config.connectionString(), clusterOptions);
+@TargetClass(value = NativeImageHelper.class)
+final class Target_NativeImageHelper {
+    @Substitute
+    public static <T> Queue<T> createMpscArrayQueue(int capacity) {
+        return new MpscAtomicUnpaddedArrayQueue<>(capacity);
     }
 }
