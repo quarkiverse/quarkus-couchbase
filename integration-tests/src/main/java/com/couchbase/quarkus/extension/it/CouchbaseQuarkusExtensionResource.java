@@ -26,7 +26,6 @@ import com.couchbase.client.java.Cluster;
 @Path("/couchbase-quarkus-extension")
 @ApplicationScoped
 public class CouchbaseQuarkusExtensionResource {
-    // add some rest methods here
     @Inject
     Cluster cluster;
 

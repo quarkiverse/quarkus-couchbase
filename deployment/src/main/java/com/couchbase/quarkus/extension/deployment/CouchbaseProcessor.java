@@ -15,6 +15,8 @@
  */
 package com.couchbase.quarkus.extension.deployment;
 
+import java.util.Optional;
+
 import jakarta.enterprise.context.ApplicationScoped;
 
 import com.couchbase.client.core.api.kv.CoreKvBinaryOps;
@@ -30,6 +32,8 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
+import io.quarkus.runtime.metrics.MetricsFactory;
 import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
 
 public class CouchbaseProcessor {
@@ -38,14 +42,27 @@ public class CouchbaseProcessor {
     @Record(ExecutionTime.RUNTIME_INIT)
     public void produceCouchbaseClient(CouchbaseRecorder recorder,
             CouchbaseConfig config,
+            Optional<MetricsCapabilityBuildItem> metricsCapability,
             BuildProducer<SyntheticBeanBuildItem> syntheticBeans) {
-        syntheticBeans.produce(SyntheticBeanBuildItem
-                .configure(Cluster.class)
-                .scope(ApplicationScoped.class)
-                .unremovable()
-                .supplier(recorder.getCluster(config))
-                .setRuntimeInit()
-                .done());
+
+        if (config.metricsEnabled() && metricsCapability.isPresent()
+                && metricsCapability.get().metricsSupported(MetricsFactory.MICROMETER)) {
+            syntheticBeans.produce(SyntheticBeanBuildItem
+                    .configure(Cluster.class)
+                    .scope(ApplicationScoped.class)
+                    .unremovable()
+                    .supplier(recorder.getClusterWithMetrics(config))
+                    .setRuntimeInit()
+                    .done());
+        } else {
+            syntheticBeans.produce(SyntheticBeanBuildItem
+                    .configure(Cluster.class)
+                    .scope(ApplicationScoped.class)
+                    .unremovable()
+                    .supplier(recorder.getCluster(config))
+                    .setRuntimeInit()
+                    .done());
+        }
 
     }
 
@@ -67,6 +84,7 @@ public class CouchbaseProcessor {
         return ReflectiveClassBuildItem.builder(
                 new String[] {
                         //Transactions
+                        "com.couchbase.client.core.util.ReactorOps",
                         //Error
                         "com.couchbase.client.core.transaction.components.ActiveTransactionRecordEntry",
                         "com.couchbase.client.core.transaction.components.DocRecord",
