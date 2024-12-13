@@ -15,33 +15,67 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
+import io.smallrye.config.WithDefault;
+import io.smallrye.config.WithName;
 
-@ConfigRoot(name = "couchbase", phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
-public final class CouchbaseConfig {
+@ConfigMapping(prefix = "quarkus.couchbase")
+@ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
+public interface CouchbaseConfig {
     /**
      * The connection string, e.g. "couchbase://10.202.32.32" or "localhost".
      */
-    @ConfigItem
-    public String connectionString;
+    @WithDefault("couchbase://localhost")
+    String connectionString();
 
     /**
      * The username to authenticate with.
      */
-    @ConfigItem
-    public String username;
+    @WithDefault("Administrator")
+    String username();
 
     /**
      * The password to authenticate with.
      */
-    @ConfigItem
-    public String password;
+    @WithDefault("password")
+    String password();
+
     /**
      * The version of the Couchbase server to connect to during the dev/test phase as dev service.
      * Default is latest, see https://hub.docker.com/_/couchbase for available versions.
      */
-    @ConfigItem(defaultValue = "latest")
-    public String version;
+    @WithDefault("latest")
+    @WithName(("devservices.version"))
+    String version();
+
+    /**
+     * Whether to enable health checks or not.
+     */
+    @WithDefault("true")
+    @WithName("health.enabled")
+    boolean healthEnabled();
+
+    /**
+     * The timeout for the Ready health check in secondss
+     * Simply put: "How long you are willing to wait to know the cluster is ready or not".
+     */
+    @WithDefault("3")
+    @WithName("health.readiness.timeout")
+    int readinessTimeout();
+
+    /**
+     * Whether metrics are enabled
+     */
+    @WithDefault("false")
+    @WithName("metrics.enabled")
+    boolean metricsEnabled();
+
+    /**
+     * The interval in seconds when metrics are emitted.
+     */
+    @WithDefault("600")
+    @WithName("metrics.emit-interval")
+    int emitInterval();
 }
