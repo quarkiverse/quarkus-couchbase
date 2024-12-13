@@ -64,4 +64,18 @@ public interface CouchbaseConfig {
     @WithDefault("3")
     @WithName("health.readiness.timeout")
     int readinessTimeout();
+
+    /**
+     * Whether metrics are enabled
+     */
+    @WithDefault("false")
+    @WithName("metrics.enabled")
+    boolean metricsEnabled();
+
+    /**
+     * The interval in seconds when metrics are emitted.
+     */
+    @WithDefault("600")
+    @WithName("metrics.emit-interval")
+    int emitInterval();
 }

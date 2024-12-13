@@ -46,6 +46,21 @@
       <groupId>io.vertx</groupId>
       <artifactId>vertx-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.couchbase.client</groupId>
+      <artifactId>metrics-micrometer</artifactId>
+      <version>0.7.6</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-micrometer</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-smallrye-metrics</artifactId>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
