@@ -25,12 +25,15 @@ This extension is currently in beta status.  It supports:
 - Dependency injecting a Couchbase `Cluster`.
 - Configuring the Cluster through `application.properties`.  Currently, a minimal set of configuration options is provided.
 - A dev service that starts a Couchbase server in a Docker container. With this you can develop your Quarkus app without having to install Couchbase on your machine.
+- GraalVM/Mandrel/native-image.
+- KV, Query, Transactions, Analytics, Search and Management operations.
+- Micrometer metrics using `quarkus-micrometer`
+- SmallRye Health checks (Readiness) using `quarkus-smallrye-health`
 
 Please try it out and provide feedback, ideas and bug reports [on Github](https://github.com/quarkiverse/quarkus-couchbase/issues).
 
 ## Native Image
-> [!IMPORTANT]
-> While the extension compiles natively, there are known issues with the produced runner which we are actively working to resolve.
+All main Cluster operations have been tested with our internal testing tools, however the extension remains in beta and some features may be missing or not be fully supported.
 
 ## Usage
 Add it to your project:
@@ -90,8 +93,11 @@ public class TestCouchbaseResource {
 
 And test http://localhost:8080/couchbase/test.
 
+## Additional Configuration
+Please refer to the [docs](https://github.com/quarkiverse/quarkus-couchbase/blob/main/docs/modules/ROOT/pages/configuration.adoc) for additional configuration options.
+
 ## Limitations
-In this a beta release the configuration options are limited to the three shown above.  
+In this a beta release the Cluster configuration options are limited to the three shown above.  
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
 
 ## License
