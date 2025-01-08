@@ -1,0 +1,32 @@
+= Couchbase Configuration
+
+Full details can be found in the xref:https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseConfig.html.[CouchbaseConfig API Reference].
+
+Currently, a minimal set of configuration options for the `Cluster` bean is provided.
+
+== Required:
+These config items do not default to placeholder values, and are required to be set in `application.properties`.
+
+* `quarkus.couchbase.connection-string`
+** *String*: Examples `localhost`, `couchbase://127.0.0.1`.
+* `quarkus.couchbase.username`
+** *String*: The username to authenticate with.
+* `quarkus.couchbase.password`
+** *String*: The password to authenticate with.
+
+== Optional
+These config items have default values, but can be overridden in `application.properties`.
+
+* `quarkus.couchbase.metrics.enabled`
+** *Boolean*: Enable or disable Micrometer metrics.
+** *Default*: `false`
+* `quarkus.couchbase.metrics.emit-interval`
+** *Milliseconds*: The interval at which metrics are emitted.
+** *Default*: `600` (10min)
+* `quarkus.couchbase.health.enabled`
+** *Boolean*: Enable or disable SmallRye health checks (Readiness check).
+** *Default*: `true`
+* `quarkus.couchbase.health.readiness.timeout`
+** *Seconds*: The timeout for the extension's Readiness health check.
+** *Default*: `3`
+

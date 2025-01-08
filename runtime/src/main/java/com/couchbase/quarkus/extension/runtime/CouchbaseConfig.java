@@ -27,24 +27,21 @@ public interface CouchbaseConfig {
     /**
      * The connection string, e.g. "couchbase://10.202.32.32" or "localhost".
      */
-    @WithDefault("couchbase://localhost")
     String connectionString();
 
     /**
      * The username to authenticate with.
      */
-    @WithDefault("Administrator")
     String username();
 
     /**
      * The password to authenticate with.
      */
-    @WithDefault("password")
     String password();
 
     /**
      * The version of the Couchbase server to connect to during the dev/test phase as dev service.
-     * Default is latest, see https://hub.docker.com/_/couchbase for available versions.
+     * Default is latest, see the <a href="https://hub.docker.com/_/couchbase">Docker Hub</a> for available versions.
      */
     @WithDefault("latest")
     @WithName(("devservices.version"))
@@ -58,8 +55,8 @@ public interface CouchbaseConfig {
     boolean healthEnabled();
 
     /**
-     * The timeout for the Ready health check in secondss
-     * Simply put: "How long you are willing to wait to know the cluster is ready or not".
+     * The timeout for the Ready health check in seconds
+     * In other words: "How long you are willing to wait to know whether the cluster is ready or not".
      */
     @WithDefault("3")
     @WithName("health.readiness.timeout")
