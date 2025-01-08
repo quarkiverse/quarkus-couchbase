@@ -1,8 +1,11 @@
-= Quarkus Couchbase
+:doctype: book
 :description: Quarkus Couchbase Documentation
 :sectanchors:
 :url-repo: https://github.com/quarkiverse/quarkus-couchbase
 
+image::couchbase-filled.svg[Couchbase Logo, 70, 70, align="center"]
+
+= Quarkus Couchbase
 include::./includes/attributes.adoc[]
 
 Integrates Couchbase into Quarkus.
@@ -10,8 +13,12 @@ Integrates Couchbase into Quarkus.
 This extension is currently in beta status. It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
-- Configuring the Cluster through `application.properties`.  Currently a minimal set of configuration options is provided.
+- Configuring the Cluster through `application.properties`. Currently, a minimal set of configuration options is provided.
 - GraalVM/Mandrel/native-image.
+- KV, Query, Transactions, Analytics, Search and Management operations.
+- Micrometer metrics using `quarkus-micrometer`
+- SmallRye Health checks (Readiness) using `quarkus-smallrye-health`
+- Dev Services (starts a Couchbase TestContainer, re-usable across tests)
 
 Please try it out and provide feedback, ideas and bug reports xref:https://github.com/quarkiverse/quarkus-couchbase/issues[on Github].
 
@@ -27,7 +34,8 @@ Add it to your project:
 </dependency>
 ----
 
-Provide the Couchbase configuration in `application.properties` (usually located in your `runtime/resources/META-INF/native-image` directory).
+Provide the Couchbase configuration in `application.properties` (usually located in your `src/main/resources` directory).
+See the xref:configuration.adoc[Configuration] section for more options and details.
 
 [source]
 ----
@@ -74,6 +82,11 @@ public class TestCouchbaseResource {
 
 And test it at http://localhost:8080/couchbase/test.
 
-== Limitations
-In this early beta release the configuration options are limited to the three shown above.
-This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
+== Unsupported Features
+
+* Connecting to a Cluster using TLS.
+** The Capella certificate is packaged with the SDK and trusted by default. This enables the extension to connect to
+a Capella Cluster with the `couchbases://` connection string in dev mode, however there is currently no exposed config item
+to specify a certificate path or trust store.
+* Using the separate `tracing-opentelemetry` package for the Couchbase Java SDK.
+

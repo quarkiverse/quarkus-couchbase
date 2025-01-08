@@ -1,1 +1,2 @@
 * xref:index.adoc[Quarkus Couchbase]
+* xref:configuration.adoc[Configuration]
