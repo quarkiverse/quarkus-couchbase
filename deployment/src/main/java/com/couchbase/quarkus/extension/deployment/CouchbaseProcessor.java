@@ -30,6 +30,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
@@ -77,6 +78,16 @@ public class CouchbaseProcessor {
         return new NativeImageProxyDefinitionBuildItem(
                 CoreKvOps.class.getName(),
                 CoreKvBinaryOps.class.getName());
+    }
+
+    @BuildStep
+    NativeImageConfigBuildItem nativeConfiguration() {
+        NativeImageConfigBuildItem.Builder builder = NativeImageConfigBuildItem.builder();
+        // NettyProcessor configures UnpooledByteBufAllocator and other related Netty classes for runtime initialization,
+        // but an instance of it is making its way into the native heap through CoreHttpRequest$Builder.EMPTY_BYTE_BUFF.
+        // Therefore, we defer its initialization until runtime.
+        builder.addRuntimeInitializedClass("com.couchbase.client.core.endpoint.http.CoreHttpRequest$Builder");
+        return builder.build();
     }
 
     @BuildStep
