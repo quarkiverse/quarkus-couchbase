@@ -20,7 +20,6 @@ import com.couchbase.quarkus.extension.runtime.nettyhandling.MainEventLoopGroup;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.NettyRecorder;
 
-import io.netty.resolver.dns.DnsServerAddressStreamProviders;
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
 import io.quarkus.bootstrap.classloading.QuarkusClassLoader;
@@ -248,50 +247,50 @@ class NettyProcessor {
                 // - com.couchbase.client.core.deps.io.netty.tryReflectionSetAccessible
                 .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent0");
 
-        //        if (QuarkusClassLoader
-        //                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
-        //            // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class
-        //            builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")
-        //                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.Unpooled")
-        //                    // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.buffer.Unpooled
-        //                    .addRuntimeReinitializedClass(
-        //                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
-        //                    .addRuntimeReinitializedClass(
-        //                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf")
-        //                    // Runtime initialize to avoid embedding quite a few Strings in the image heap
-        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil$HexUtil")
-        //                    // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class in the
-        //                    // static initializers and to respect the run-time provided value of the following properties:
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.directMemoryCacheAlignment
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.pageSize
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.maxOrder
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.numHeapArenas
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.numDirectArenas
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.smallCacheSize
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.normalCacheSize
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.maxCachedBufferCapacity
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.cacheTrimInterval
-        //                    // - com.couchbase.client.core.deps.io.netty.allocation.cacheTrimIntervalMillis
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.cacheTrimIntervalMillis
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.useCacheForAllThreads
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.maxCachedByteBuffersPerChunk
-        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.PooledByteBufAllocator")
-        //                    // Runtime initialize due to the use of ByteBufUtil.DEFAULT_ALLOCATOR in the static initializers
-        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufAllocator")
-        //                    // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class in the
-        //                    // static initializers and to respect the run-time provided value of the following properties:
-        //                    // - com.couchbase.client.core.deps.io.netty.allocator.type
-        //                    // - com.couchbase.client.core.deps.io.netty.threadLocalDirectBufferSize
-        //                    // - com.couchbase.client.core.deps.io.netty.maxThreadLocalCharBufferSize
-        //                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil");
-        //
-        //            if (QuarkusClassLoader
-        //                    .isClassPresentAtRuntime("org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload")) {
-        //                // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.buffer.Unpooled
-        //                builder.addRuntimeReinitializedClass(
-        //                        "org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload");
-        //            }
-        //        }
+        if (QuarkusClassLoader
+                .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
+            // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class
+            builder.addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")
+                    .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.Unpooled")
+                    // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.buffer.Unpooled
+                    .addRuntimeReinitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.http.HttpObjectAggregator")
+                    .addRuntimeReinitializedClass(
+                            "com.couchbase.client.core.deps.io.netty.handler.codec.ReplayingDecoderByteBuf")
+                    // Runtime initialize to avoid embedding quite a few Strings in the image heap
+                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil$HexUtil")
+                    // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class in the
+                    // static initializers and to respect the run-time provided value of the following properties:
+                    // - com.couchbase.client.core.deps.io.netty.allocator.directMemoryCacheAlignment
+                    // - com.couchbase.client.core.deps.io.netty.allocator.pageSize
+                    // - com.couchbase.client.core.deps.io.netty.allocator.maxOrder
+                    // - com.couchbase.client.core.deps.io.netty.allocator.numHeapArenas
+                    // - com.couchbase.client.core.deps.io.netty.allocator.numDirectArenas
+                    // - com.couchbase.client.core.deps.io.netty.allocator.smallCacheSize
+                    // - com.couchbase.client.core.deps.io.netty.allocator.normalCacheSize
+                    // - com.couchbase.client.core.deps.io.netty.allocator.maxCachedBufferCapacity
+                    // - com.couchbase.client.core.deps.io.netty.allocator.cacheTrimInterval
+                    // - com.couchbase.client.core.deps.io.netty.allocation.cacheTrimIntervalMillis
+                    // - com.couchbase.client.core.deps.io.netty.allocator.cacheTrimIntervalMillis
+                    // - com.couchbase.client.core.deps.io.netty.allocator.useCacheForAllThreads
+                    // - com.couchbase.client.core.deps.io.netty.allocator.maxCachedByteBuffersPerChunk
+                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.PooledByteBufAllocator")
+                    // Runtime initialize due to the use of ByteBufUtil.DEFAULT_ALLOCATOR in the static initializers
+                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufAllocator")
+                    // Runtime initialize due to the use of the com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent class in the
+                    // static initializers and to respect the run-time provided value of the following properties:
+                    // - com.couchbase.client.core.deps.io.netty.allocator.type
+                    // - com.couchbase.client.core.deps.io.netty.threadLocalDirectBufferSize
+                    // - com.couchbase.client.core.deps.io.netty.maxThreadLocalCharBufferSize
+                    .addRuntimeInitializedClass("com.couchbase.client.core.deps.io.netty.buffer.ByteBufUtil");
+
+            if (QuarkusClassLoader
+                    .isClassPresentAtRuntime("org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload")) {
+                // Runtime initialize due to dependency on com.couchbase.client.core.deps.io.netty.buffer.Unpooled
+                builder.addRuntimeReinitializedClass(
+                        "org.jboss.resteasy.reactive.client.impl.multipart.QuarkusMultipartFormUpload");
+            }
+        }
 
         return builder //TODO: make configurable
                 .build();
@@ -388,11 +387,6 @@ class NettyProcessor {
      *
      * @return the log cleanup item removing the message
      */
-    @BuildStep
-    LogCleanupFilterBuildItem cleanupMacDNSInLog() {
-        return new LogCleanupFilterBuildItem(DnsServerAddressStreamProviders.class.getName(), Level.WARN,
-                "Can not find com.couchbase.client.core.deps.io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider in the classpath");
-    }
 
     /**
      * `Version.identify()` in netty-common uses the resource to determine the version of netty.
