@@ -1,5 +1,6 @@
 package com.couchbase.quarkus.extension.deployment;
 
+import com.couchbase.client.core.util.ConnectionString;
 import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
 
 import io.quarkus.deployment.IsDevelopment;
@@ -42,26 +43,11 @@ public class CouchbaseDevUiProcessor {
      * @return The first hostname, or "localhost" by default.
      */
     private String extractHostnameFromConnectionString(String connectionString) {
-        if (connectionString == null || connectionString.isEmpty()) {
+        ConnectionString connStr = ConnectionString.create(connectionString);
+        if (connStr.hosts().isEmpty()) {
             return "localhost";
+        } else {
+            return connStr.hosts().get(0).host();
         }
-
-        var hosts = connectionString;
-        if (hosts.startsWith("couchbase://")) {
-            hosts = hosts.substring("couchbase://".length());
-        }
-
-        var hostPorts = hosts.split(",");
-        if (hostPorts.length == 0) {
-            return "localhost";
-        }
-
-        var firstHostPort = hostPorts[0].trim();
-        int colonIndex = firstHostPort.indexOf(':');
-        if (colonIndex == -1) {
-            return firstHostPort;
-        }
-
-        return firstHostPort.substring(0, colonIndex);
     }
 }
