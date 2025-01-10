@@ -46,25 +46,17 @@ public class CouchbaseProcessor {
             Optional<MetricsCapabilityBuildItem> metricsCapability,
             BuildProducer<SyntheticBeanBuildItem> syntheticBeans) {
 
-        if (config.metricsEnabled() && metricsCapability.isPresent()
-                && metricsCapability.get().metricsSupported(MetricsFactory.MICROMETER)) {
-            syntheticBeans.produce(SyntheticBeanBuildItem
-                    .configure(Cluster.class)
-                    .scope(ApplicationScoped.class)
-                    .unremovable()
-                    .supplier(recorder.getClusterWithMetrics(config))
-                    .setRuntimeInit()
-                    .done());
-        } else {
-            syntheticBeans.produce(SyntheticBeanBuildItem
-                    .configure(Cluster.class)
-                    .scope(ApplicationScoped.class)
-                    .unremovable()
-                    .supplier(recorder.getCluster(config))
-                    .setRuntimeInit()
-                    .done());
-        }
+        var metricsEnabled = config.metricsEnabled()
+                && metricsCapability.isPresent()
+                && metricsCapability.get().metricsSupported(MetricsFactory.MICROMETER);
 
+        syntheticBeans.produce(SyntheticBeanBuildItem
+                .configure(Cluster.class)
+                .scope(ApplicationScoped.class)
+                .unremovable()
+                .supplier(recorder.getCluster(config, metricsEnabled))
+                .setRuntimeInit()
+                .done());
     }
 
     @BuildStep

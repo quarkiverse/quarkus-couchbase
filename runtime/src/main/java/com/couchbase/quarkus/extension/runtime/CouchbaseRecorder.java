@@ -20,24 +20,47 @@ import java.util.function.Supplier;
 
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
+import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.metrics.micrometer.MicrometerMeter;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Metrics;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
 import io.quarkus.runtime.annotations.Recorder;
 
 @Recorder
 public class CouchbaseRecorder {
 
-    public Supplier<Cluster> getCluster(CouchbaseConfig config) {
-        return () -> Cluster.connect(config.connectionString(), config.username(), config.password());
+    public Supplier<Cluster> getCluster(CouchbaseConfig config, boolean metricsEnabled) {
+        var clusterOptions = ClusterOptions.clusterOptions(config.username(), config.password());
+        var clusterEnvironmentBuilder = ClusterEnvironment.builder();
+        if (metricsEnabled) {
+            configureMetrics(clusterEnvironmentBuilder, config.emitInterval());
+        }
+        clusterOptions.environment(clusterEnvironmentBuilder.build());
+        return () -> Cluster.connect(config.connectionString(), clusterOptions);
     }
 
-    public Supplier<Cluster> getClusterWithMetrics(CouchbaseConfig config) {
-        return () -> Cluster.connect(config.connectionString(),
-                ClusterOptions.clusterOptions(config.username(), config.password())
-                        .environment(
-                                env -> env.meter(MicrometerMeter.wrap(io.micrometer.core.instrument.Metrics.globalRegistry))
-                                        .loggingMeterConfig(meterConfig -> meterConfig
-                                                .enabled(true)
-                                                .emitInterval(Duration.ofSeconds(config.emitInterval())))));
+    public void configureMetrics(ClusterEnvironment.Builder clusterEnvironmentBuilder, int emitInterval) {
+        //Micrometer won't create a histogram by default. Configuring it here.
+        Metrics.globalRegistry.config().meterFilter(new MeterFilter() {
+            @Override
+            public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
+                if (id.getType() == Meter.Type.DISTRIBUTION_SUMMARY) {
+                    return DistributionStatisticConfig.builder()
+                            .percentilesHistogram(true)
+                            .build()
+                            .merge(config);
+                }
+                return config;
+            }
+        });
+
+        clusterEnvironmentBuilder.meter(MicrometerMeter.wrap(Metrics.globalRegistry))
+                .loggingMeterConfig(meterConfig -> meterConfig
+                        .enabled(true)
+                        .emitInterval(Duration.ofSeconds(emitInterval)));
+
     }
 }

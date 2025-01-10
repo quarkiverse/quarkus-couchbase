@@ -1,5 +1,6 @@
 package com.couchbase.quarkus.extension.deployment;
 
+import com.couchbase.client.core.error.InvalidArgumentException;
 import com.couchbase.client.core.util.ConnectionString;
 import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
 
@@ -43,11 +44,11 @@ public class CouchbaseDevUiProcessor {
      * @return The first hostname, or "localhost" by default.
      */
     private String extractHostnameFromConnectionString(String connectionString) {
-        ConnectionString connStr = ConnectionString.create(connectionString);
-        if (connStr.hosts().isEmpty()) {
-            return "localhost";
-        } else {
+        try {
+            ConnectionString connStr = ConnectionString.create(connectionString);
             return connStr.hosts().get(0).host();
+        } catch (InvalidArgumentException e) {
+            return "localhost";
         }
     }
 }
