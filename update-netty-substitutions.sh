@@ -72,17 +72,13 @@ sed -i '' 's/@ConfigRoot(name = "netty", phase = ConfigPhase.BUILD_TIME)/@Config
 #Delete two methods in NettyProcessor which we don't want to use
 echo "$counter - Deleting code we don't want in NettyProcessor"
 ((counter++))
-#./deleteMethod.sh "public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask" "$DEST_DEPLOYMENT/NettyProcessor.java"
 ./deleteMethod.sh "LogCleanupFilterBuildItem cleanupMacDNSInLog" "$DEST_DEPLOYMENT/NettyProcessor.java"
-#./deleteMethod.sh "static SslContext newClientContextInternal" "$DEST_RUNTIME/runtime/graal/NettySubstitutions.java"
-#./deleteMethod.sh "final class Target_io_netty_handler_ssl_JdkSslClientContext" "$DEST_RUNTIME/runtime/graal/NettySubstitutions.java"
 
 
 #This isn't absolutely necessary, as Quarkus will optimise imports and remove unused/missing ones during compilation.
 echo "$counter - Deleting missing import"
 ((counter++))
 sed -i '' '/import com.couchbase.client.core.deps.io.netty.resolver.dns.DnsServerAddressStreamProviders;/d' "$DEST_DEPLOYMENT/NettyProcessor.java"
-#sed -i '' '/import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;/d' "$DEST_DEPLOYMENT/NettyProcessor.java"
 
 # Delete the cloned repo
 echo "$counter - Deleting cloned repo"
