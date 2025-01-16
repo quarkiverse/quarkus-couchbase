@@ -1,6 +1,5 @@
 package com.couchbase.quarkus.extension.deployment;
 
-import com.couchbase.client.core.error.InvalidArgumentException;
 import com.couchbase.client.core.util.ConnectionString;
 import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
 
@@ -41,14 +40,10 @@ public class CouchbaseDevUiProcessor {
      * Extracts the first hostname from the connection string to redirect to the Cluster UI Dashboard.
      *
      * @param connectionString The connection string specified in application.properties.
-     * @return The first hostname, or "localhost" by default.
+     * @return The first hostname.
      */
     private String extractHostnameFromConnectionString(String connectionString) {
-        try {
-            ConnectionString connStr = ConnectionString.create(connectionString);
-            return connStr.hosts().get(0).host();
-        } catch (InvalidArgumentException e) {
-            return "localhost";
-        }
+        ConnectionString connStr = ConnectionString.create(connectionString);
+        return connStr.hosts().get(0).host();
     }
 }
