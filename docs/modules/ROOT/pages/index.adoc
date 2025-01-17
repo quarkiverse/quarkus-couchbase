@@ -82,6 +82,12 @@ public class TestCouchbaseResource {
 
 And test it at http://localhost:8080/couchbase/test.
 
+== Micrometer Metrics
+
+You can enable Micrometer metrics by adding quarkus-micrometer to your dependencies, and setting `quarkus.couchbase.metrics.enabled=true` in `application.properties`.
+The emission rate is also configurable with `quarkus.couchbase.metrics.emit-interval`.
+It is recommended to enable histograms which aren't enabled by default. Configuring the `MeterRegistry` is explained on the xref:https://quarkus.io/guides/telemetry-micrometer#customizing-micrometer[Quarkus Docs] and xref:https://docs.couchbase.com/java-sdk/current/howtos/observability-metrics.html#micrometer-integration[Couchbase docs].
+
 == Unsupported Features
 
 * Connecting to a Cluster using TLS.

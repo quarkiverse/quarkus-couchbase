@@ -28,26 +28,9 @@ public class CouchbaseRecorder {
     }
 
     private void configureMetrics(ClusterEnvironment.Builder env, int emitInterval) {
-        configureMicrometer();
-
         env.meter(MicrometerMeter.wrap(Metrics.globalRegistry))
                 .loggingMeterConfig(meterConfig -> meterConfig
                         .enabled(true)
                         .emitInterval(Duration.ofSeconds(emitInterval)));
-    }
-
-    private void configureMicrometer() {
-        Metrics.globalRegistry.config().meterFilter(new MeterFilter() {
-            @Override
-            public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
-                if (id.getType() == Meter.Type.DISTRIBUTION_SUMMARY) {
-                    return DistributionStatisticConfig.builder()
-                            .percentilesHistogram(true)
-                            .build()
-                            .merge(config);
-                }
-                return config;
-            }
-        });
     }
 }
