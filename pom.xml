@@ -8,7 +8,7 @@
   </parent>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase-parent</artifactId>
-  <version>999-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
   <name>Couchbase Quarkus Extension - Parent</name>
   <description>Allows access to a Couchbase cluster from a Quarkus application</description>
@@ -47,7 +47,7 @@
     <connection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</connection>
     <developerConnection>scm:git:https://github.com/quarkiverse/quarkus-couchbase</developerConnection>
     <url>https://github.com/quarkiverse/quarkus-couchbase</url>
-    <tag>HEAD</tag>
+    <tag>1.0.0</tag>
   </scm>
   <modules>
     <module>deployment</module>
