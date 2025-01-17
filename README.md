@@ -97,8 +97,9 @@ And test http://localhost:8080/couchbase/test.
 Please refer to the [docs](https://github.com/quarkiverse/quarkus-couchbase/blob/main/docs/modules/ROOT/pages/configuration.adoc) for additional configuration options.
 
 ## Limitations
-In this a beta release the Cluster configuration options are limited to the three shown above.  
+The Cluster configuration options are limited cluster credentials, and micrometer metrics emission rate.  
 This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
+Additional Cluster connections can be created and configured using `Cluster.connect(...)`, however not all code paths have been tested and are therefore not officially supported.
 
 ## License
 All the files under `nettyhandling` directories, both in the `runtime` and `deployment` modules are

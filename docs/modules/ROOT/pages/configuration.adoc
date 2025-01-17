@@ -21,7 +21,7 @@ These config items have default values, but can be overridden in `application.pr
 ** *Boolean*: Enable or disable Micrometer metrics.
 ** *Default*: `false`
 * `quarkus.couchbase.metrics.emit-interval`
-** *Milliseconds*: The interval at which metrics are emitted.
+** *Seconds*: The interval at which metrics are emitted.
 ** *Default*: `600` (10min)
 * `quarkus.couchbase.health.enabled`
 ** *Boolean*: Enable or disable SmallRye health checks (Readiness check).
