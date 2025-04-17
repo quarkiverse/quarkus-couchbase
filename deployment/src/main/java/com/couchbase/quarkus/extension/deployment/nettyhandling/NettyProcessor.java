@@ -32,6 +32,7 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageSystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.ReflectiveMethodBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.UnsafeAccessedFieldBuildItem;
@@ -57,7 +58,7 @@ class NettyProcessor {
     @BuildStep
     public SystemPropertyBuildItem limitArenaSize(NettyBuildTimeConfig config,
             List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems) {
-        String maxOrder = calculateMaxOrder(config.allocatorMaxOrder, minMaxOrderBuildItems, true);
+        String maxOrder = calculateMaxOrder(config.allocatorMaxOrder(), minMaxOrderBuildItems, true);
 
         //in native mode we limit the size of the epoll array
         //if the array overflows the selector just moves the overflow to a map
@@ -80,10 +81,29 @@ class NettyProcessor {
     }
 
     @BuildStep
+    public SystemPropertyBuildItem disableFinalizers() {
+        return new SystemPropertyBuildItem(
+                "com.couchbase.client.core.deps.io.netty.allocator.disableCacheFinalizersForFastThreadLocalThreads", "true");
+    }
+
+    @BuildStep
     NativeImageConfigBuildItem build(
             NettyBuildTimeConfig config,
             BuildProducer<ReflectiveClassBuildItem> reflectiveClass,
+            BuildProducer<ReflectiveMethodBuildItem> reflectiveMethods,
             List<MinNettyAllocatorMaxOrderBuildItem> minMaxOrderBuildItems) {
+
+        reflectiveMethods.produce(
+                new ReflectiveMethodBuildItem("Reflectively accessed through PlatformDependent0's static initializer",
+                        "jdk.internal.misc.Unsafe", "getUnsafe", new String[0]));
+        // in JDK >= 21 the constructor has `long, long` signature
+        reflectiveMethods.produce(
+                new ReflectiveMethodBuildItem("Reflectively accessed through PlatformDependent0's static initializer",
+                        "java.nio.DirectByteBuffer", "<init>", new String[] { long.class.getName(), long.class.getName() }));
+        // in JDK < 21 the constructor has `long, int` signature
+        reflectiveMethods.produce(
+                new ReflectiveMethodBuildItem("Reflectively accessed through PlatformDependent0's static initializer",
+                        "java.nio.DirectByteBuffer", "<init>", new String[] { long.class.getName(), int.class.getName() }));
 
         reflectiveClass.produce(
                 ReflectiveClassBuildItem.builder("com.couchbase.client.core.deps.io.netty.channel.socket.nio.NioSocketChannel")
@@ -99,7 +119,7 @@ class NettyProcessor {
                 .produce(ReflectiveClassBuildItem.builder("java.util.LinkedHashMap").build());
         reflectiveClass.produce(ReflectiveClassBuildItem.builder("sun.nio.ch.SelectorImpl").methods().fields().build());
 
-        String maxOrder = calculateMaxOrder(config.allocatorMaxOrder, minMaxOrderBuildItems, false);
+        String maxOrder = calculateMaxOrder(config.allocatorMaxOrder(), minMaxOrderBuildItems, false);
 
         NativeImageConfigBuildItem.Builder builder = NativeImageConfigBuildItem.builder()
                 // Use small chunks to avoid a lot of wasted space. Default is 16mb * arenas (derived from core count)

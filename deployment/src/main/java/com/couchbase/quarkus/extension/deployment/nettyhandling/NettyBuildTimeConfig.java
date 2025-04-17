@@ -2,12 +2,13 @@ package com.couchbase.quarkus.extension.deployment.nettyhandling;
 
 import java.util.OptionalInt;
 
-import io.quarkus.runtime.annotations.ConfigItem;
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
+import io.smallrye.config.ConfigMapping;
 
-@ConfigRoot(name = "couchbase.netty", phase = ConfigPhase.BUILD_TIME)
-public class NettyBuildTimeConfig {
+@ConfigRoot(phase = ConfigPhase.BUILD_TIME)
+@ConfigMapping(prefix = "couchbase.netty")
+public interface NettyBuildTimeConfig {
 
     /**
      * The value configuring the {@code com.couchbase.client.core.deps.io.netty.allocator.maxOrder} system property of Netty.
@@ -19,6 +20,5 @@ public class NettyBuildTimeConfig {
      * It must be used carefully.
      * More details on https://programmer.group/pool-area-of-netty-memory-pool.html.
      */
-    @ConfigItem
-    public OptionalInt allocatorMaxOrder;
+    OptionalInt allocatorMaxOrder();
 }
