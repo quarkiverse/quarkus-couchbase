@@ -158,7 +158,7 @@ public class CouchbaseProcessor {
                 "com.couchbase.client.core.deps.org.xbill.DNS.SimpleResolver",
                 "com.couchbase.client.core.deps.org.xbill.DNS.NioUdpClient",
                 "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilLocalhost4LazyHolder",
-                "com.couchbase.client.core.deps.org.xbill.DNS.Header",// has static Random instance
+                "com.couchbase.client.core.deps.org.xbill.DNS.Header", // has static Random instance
                 "com.couchbase.client.core.deps.org.xbill.DNS.ResolverConfig",
                 "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider",
                 "com.couchbase.client.core.deps.io.grpc.internal.RetriableStream",
