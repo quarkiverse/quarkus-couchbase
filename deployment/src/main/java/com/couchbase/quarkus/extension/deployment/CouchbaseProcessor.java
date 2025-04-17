@@ -15,6 +15,8 @@
  */
 package com.couchbase.quarkus.extension.deployment;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -33,6 +35,7 @@ import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
 import io.quarkus.runtime.metrics.MetricsFactory;
 import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
@@ -146,4 +149,30 @@ public class CouchbaseProcessor {
                         "com.couchbase.client.core.api.search.vector.CoreVectorSearchOptions"
                 }).fields().methods().build();
     }
+
+    @BuildStep
+    void configureRuntimeInitializedClasses(BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitialized) {
+        List<String> classes = Arrays.asList(
+                "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider$InnerWindowsResolverConfigProvider",
+                "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilNetworkInterfacesLazyHolder",
+                "com.couchbase.client.core.deps.org.xbill.DNS.SimpleResolver",
+                "com.couchbase.client.core.deps.org.xbill.DNS.NioUdpClient",
+                "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilLocalhost4LazyHolder",
+                "com.couchbase.client.core.deps.org.xbill.DNS.Header",// has static Random instance
+                "com.couchbase.client.core.deps.org.xbill.DNS.ResolverConfig",
+                "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider",
+                "com.couchbase.client.core.deps.io.grpc.internal.RetriableStream",
+                "com.couchbase.client.core.msg.kv.RangeScanCreateRequest",
+                "com.couchbase.client.core.deps.org.xbill.DNS.io.DefaultIoClientFactory",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSsl",
+                "com.couchbase.client.core.deps.io.netty.internal.tcnative.SSL",
+                "com.couchbase.client.core.deps.io.netty.internal.tcnative.CertificateVerifier",
+                "com.couchbase.client.core.io.netty.SslHandlerFactory$InitOnDemandHolder",
+                "com.couchbase.client.core.cnc.apptelemetry.reporter.AppTelemetryReporterImpl");// has static Random instance
+
+        for (String className : classes) {
+            runtimeInitialized.produce(new RuntimeInitializedClassBuildItem(className));
+        }
+    }
+
 }
