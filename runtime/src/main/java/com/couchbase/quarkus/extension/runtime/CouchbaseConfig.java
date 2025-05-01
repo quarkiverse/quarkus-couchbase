@@ -78,7 +78,7 @@ public interface CouchbaseConfig {
     @WithName("metrics.emit-interval")
     int emitInterval();
 
-    /*
+    /**
      * The preferred server group to use for operations that support such.
      */
     @WithName("preferredServerGroup")

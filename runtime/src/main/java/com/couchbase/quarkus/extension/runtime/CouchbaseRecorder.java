@@ -38,7 +38,7 @@ public class CouchbaseRecorder {
     }
 
     private void configureEnvironment(CouchbaseConfig config, ClusterEnvironment.Builder env, boolean metricsEnabled) {
-        if (metricsEnabled){
+        if (metricsEnabled) {
             env.meter(MicrometerMeter.wrap(Metrics.globalRegistry))
                     .loggingMeterConfig(meterConfig -> meterConfig
                             .enabled(true)

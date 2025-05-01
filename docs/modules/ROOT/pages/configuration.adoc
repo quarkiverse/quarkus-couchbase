@@ -23,6 +23,9 @@ These config items have default values, but can be overridden in `application.pr
 * `quarkus.couchbase.metrics.emit-interval`
 ** *Seconds*: The interval at which metrics are emitted.
 ** *Default*: `600` (10min)
+* `quarkus.couchbase.preferredServerGroup`
+** *Seconds*: The preferred server group for operations which support it.
+** *Default*: None
 * `quarkus.couchbase.health.enabled`
 ** *Boolean*: Enable or disable SmallRye health checks (Readiness check).
 ** *Default*: `true`
