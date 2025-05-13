@@ -15,6 +15,8 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
+import java.util.Optional;
+
 import io.quarkus.runtime.annotations.ConfigPhase;
 import io.quarkus.runtime.annotations.ConfigRoot;
 import io.smallrye.config.ConfigMapping;
@@ -75,4 +77,10 @@ public interface CouchbaseConfig {
     @WithDefault("600")
     @WithName("metrics.emit-interval")
     int emitInterval();
+
+    /**
+     * The preferred server group to use for operations that support such.
+     */
+    @WithName("preferredServerGroup")
+    Optional<String> preferredServerGroup();
 }
