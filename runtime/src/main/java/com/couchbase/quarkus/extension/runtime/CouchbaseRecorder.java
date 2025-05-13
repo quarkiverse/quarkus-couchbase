@@ -32,17 +32,21 @@ public class CouchbaseRecorder {
     public Supplier<Cluster> getCluster(CouchbaseConfig config, boolean metricsEnabled) {
         final ClusterOptions clusterOptions = ClusterOptions.clusterOptions(config.username(), config.password());
 
-        if (metricsEnabled) {
-            clusterOptions.environment(env -> configureMetrics(env, config.emitInterval()));
-        }
+        clusterOptions.environment(env -> configureEnvironment(config, env, metricsEnabled));
 
         return () -> Cluster.connect(config.connectionString(), clusterOptions);
     }
 
-    private void configureMetrics(ClusterEnvironment.Builder env, int emitInterval) {
-        env.meter(MicrometerMeter.wrap(Metrics.globalRegistry))
-                .loggingMeterConfig(meterConfig -> meterConfig
-                        .enabled(true)
-                        .emitInterval(Duration.ofSeconds(emitInterval)));
+    private void configureEnvironment(CouchbaseConfig config, ClusterEnvironment.Builder env, boolean metricsEnabled) {
+        if (metricsEnabled) {
+            env.meter(MicrometerMeter.wrap(Metrics.globalRegistry))
+                    .loggingMeterConfig(meterConfig -> meterConfig
+                            .enabled(true)
+                            .emitInterval(Duration.ofSeconds(config.emitInterval())));
+        }
+
+        if (config.preferredServerGroup().isPresent()) {
+            env.preferredServerGroup(config.preferredServerGroup().get());
+        }
     }
 }
