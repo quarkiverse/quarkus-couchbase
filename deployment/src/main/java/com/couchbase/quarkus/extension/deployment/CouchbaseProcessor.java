@@ -34,6 +34,7 @@ import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
 import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
@@ -146,7 +147,27 @@ public class CouchbaseProcessor {
                         "com.couchbase.client.core.api.search.vector.CoreVectorQuery",
                         "com.couchbase.client.core.api.search.vector.CoreVectorQueryCombination",
                         "com.couchbase.client.core.api.search.vector.CoreVectorSearch",
-                        "com.couchbase.client.core.api.search.vector.CoreVectorSearchOptions"
+                        "com.couchbase.client.core.api.search.vector.CoreVectorSearchOptions",
+                        // Configuration
+                        "com.couchbase.client.core.env.ThresholdRequestTracerConfig$Builder",
+                        "com.couchbase.client.core.env.SecurityConfig$Builder",
+                        "com.couchbase.client.core.env.TimeoutConfig$Builder",
+                        "com.couchbase.client.core.env.ThresholdLoggingTracerConfig$Builder",
+                        "com.couchbase.client.core.env.CompressionConfig$Builder",
+                        "com.couchbase.client.core.env.OrphanReporterConfig$Builder",
+                        "com.couchbase.client.core.env.LoggingMeterConfig$Builder",
+                        "com.couchbase.client.core.env.TimerConfig$Builder",
+                        "com.couchbase.client.core.env.IoConfig$Builder",
+                        "com.couchbase.client.core.env.LoggerConfig$Builder",
+                        "com.couchbase.client.core.endpoint.CircuitBreakerConfig$Builder",
+                        "com.couchbase.client.core.service.AnalyticsServiceConfig$Builder",
+                        "com.couchbase.client.core.service.ViewServiceConfig$Builder",
+                        "com.couchbase.client.core.service.KeyValueServiceConfig$Builder",
+                        "com.couchbase.client.core.service.SearchServiceConfig$Builder",
+                        "com.couchbase.client.core.service.QueryServiceConfig$Builder",
+                        "com.couchbase.client.core.service.AbstractPooledEndpointServiceConfig$Builder",
+                        "com.couchbase.client.core.env.CoreEnvironment$Builder",
+                        "com.couchbase.client.java.env.ClusterEnvironment$Builder"
                 }).fields().methods().build();
     }
 
@@ -175,4 +196,8 @@ public class CouchbaseProcessor {
         }
     }
 
+    @BuildStep
+    NativeImageResourceBuildItem nativeImageResourceBuildItem() {
+        return new NativeImageResourceBuildItem("com/couchbase/client/core/env/capella-ca.pem");
+    }
 }
