@@ -8,10 +8,10 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancelInProgress: true
 
 jobs:
-  prepare-release:
+  prepareRelease:
     name: Prepare Release
     if: ${{ github.event.pull_request.merged == true}}
     uses: quarkiverse/.github/.github/workflows/prepare-release.yml@main

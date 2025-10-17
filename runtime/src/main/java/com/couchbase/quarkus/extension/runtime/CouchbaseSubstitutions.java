@@ -21,12 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
+import com.couchbase.client.core.deps.io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import com.couchbase.client.core.deps.org.xbill.DNS.Name;
 import com.couchbase.client.core.deps.org.xbill.DNS.ResolverConfig;
 import com.couchbase.client.core.deps.org.xbill.DNS.SimpleResolver;
-import com.couchbase.client.core.deps.org.xbill.DNS.config.*;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.FallbackPropertyResolverConfigProvider;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.InitializationException;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.JndiContextResolverConfigProvider;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.PropertyResolverConfigProvider;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.ResolvConfResolverConfigProvider;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.ResolverConfigProvider;
+import com.couchbase.client.core.deps.org.xbill.DNS.config.SunJvmResolverConfigProvider;
 import com.couchbase.client.core.encryption.CryptoManager;
-import com.couchbase.client.java.codec.*;
+import com.couchbase.client.java.codec.DefaultJsonSerializer;
+import com.couchbase.client.java.codec.JsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.oracle.svm.core.annotate.Alias;
 import com.oracle.svm.core.annotate.Substitute;
@@ -54,6 +62,11 @@ final class TargetClusterEnvironment {
             }
         }
     }
+}
+
+@TargetClass(value = InsecureTrustManagerFactory.class)
+final class Target_InsecureTrustManagerFactory {
+
 }
 
 @TargetClass(value = ResolverConfig.class)

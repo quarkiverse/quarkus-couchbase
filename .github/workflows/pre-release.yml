@@ -7,10 +7,10 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancelInProgress: true
 
 jobs:
-  pre-release:
+  preRelease:
     name: Pre-Release
     uses: quarkiverse/.github/.github/workflows/pre-release.yml@main
     secrets: inherit
