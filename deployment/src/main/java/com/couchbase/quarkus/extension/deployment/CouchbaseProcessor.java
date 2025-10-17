@@ -77,16 +77,6 @@ public class CouchbaseProcessor {
     }
 
     @BuildStep
-    NativeImageConfigBuildItem nativeConfiguration() {
-        NativeImageConfigBuildItem.Builder builder = NativeImageConfigBuildItem.builder();
-        // NettyProcessor configures UnpooledByteBufAllocator and other related Netty classes for runtime initialization,
-        // but an instance of it is making its way into the native heap through CoreHttpRequest$Builder.EMPTY_BYTE_BUFF.
-        // Therefore, we defer its initialization until runtime.
-        builder.addRuntimeInitializedClass("com.couchbase.client.core.endpoint.http.CoreHttpRequest$Builder");
-        return builder.build();
-    }
-
-    @BuildStep
     ReflectiveClassBuildItem reflection() {
         return ReflectiveClassBuildItem.builder(
                 new String[] {
@@ -189,7 +179,9 @@ public class CouchbaseProcessor {
                 "com.couchbase.client.core.deps.io.netty.internal.tcnative.SSL",
                 "com.couchbase.client.core.deps.io.netty.internal.tcnative.CertificateVerifier",
                 "com.couchbase.client.core.io.netty.SslHandlerFactory$InitOnDemandHolder",
-                "com.couchbase.client.core.cnc.apptelemetry.reporter.AppTelemetryReporterImpl");// has static Random instance
+                "com.couchbase.client.core.cnc.apptelemetry.reporter.AppTelemetryReporterImpl", // has static Random instance
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslEngine",
+                "com.couchbase.client.core.endpoint.http.CoreHttpRequest$Builder");
 
         for (String className : classes) {
             runtimeInitialized.produce(new RuntimeInitializedClassBuildItem(className));
@@ -199,5 +191,17 @@ public class CouchbaseProcessor {
     @BuildStep
     NativeImageResourceBuildItem nativeImageResourceBuildItem() {
         return new NativeImageResourceBuildItem("com/couchbase/client/core/env/capella-ca.pem");
+    }
+
+    @BuildStep
+    NativeImageConfigBuildItem nettyCompressionRuntimeInit() {
+        NativeImageConfigBuildItem.Builder builder = NativeImageConfigBuildItem.builder();
+        builder.addRuntimeInitializedClass(
+                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibCodecFactory");
+        builder.addRuntimeInitializedClass(
+                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.JZlibDecoder");
+        builder.addRuntimeInitializedClass(
+                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.JZlibEncoder");
+        return builder.build();
     }
 }

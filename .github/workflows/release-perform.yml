@@ -1,5 +1,5 @@
 name: Quarkiverse Perform Release
-run-name: Perform ${{github.event.inputs.tag || github.ref_name}} Release
+runName: Perform ${{github.event.inputs.tag || github.ref_name}} Release
 on:
   push:
     tags:
@@ -12,15 +12,15 @@ on:
 
 permissions:
   attestations: write
-  id-token: write
+  idToken: write
   contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancelInProgress: true
 
 jobs:
-  perform-release:
+  performRelease:
     name: Perform Release
     uses: quarkiverse/.github/.github/workflows/perform-release.yml@main
     secrets: inherit

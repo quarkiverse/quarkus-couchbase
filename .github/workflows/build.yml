@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - "main"
-    paths-ignore:
+    pathsIgnore:
       - '.gitignore'
       - 'CODEOWNERS'
       - 'LICENSE'
@@ -13,7 +13,7 @@ on:
       - '*.txt'
       - '.all-contributorsrc'
   pull_request:
-    paths-ignore:
+    pathsIgnore:
       - '.gitignore'
       - 'CODEOWNERS'
       - 'LICENSE'
@@ -29,8 +29,8 @@ jobs:
       matrix:
 #        os: [windows-latest, macos-latest, ubuntu-latest]
         os: [ubuntu-latest]
-      fail-fast: false
-    runs-on: ${{ matrix.os }}
+      failFast: false
+    runsOn: ${{ matrix.os }}
     steps:
       - name: Prepare git
         run: git config --global core.autocrlf false
@@ -41,7 +41,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 17
+          javaVersion: 17
           cache: 'maven'
 
       - name: Build with Maven

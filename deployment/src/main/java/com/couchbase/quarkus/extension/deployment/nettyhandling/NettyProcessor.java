@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Random;
 import java.util.function.Supplier;
 
 import jakarta.inject.Singleton;
@@ -18,6 +17,7 @@ import com.couchbase.client.core.deps.io.netty.util.internal.logging.InternalLog
 import com.couchbase.quarkus.extension.runtime.nettyhandling.BossEventLoopGroup;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.MainEventLoopGroup;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.EmptyByteBufStub;
+import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.MachineIdGenerator;
 import com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.NettyRecorder;
 
 import io.quarkus.arc.deployment.AdditionalBeanBuildItem;
@@ -27,6 +27,7 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.GeneratedRuntimeSystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.SystemPropertyBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
@@ -34,7 +35,6 @@ import io.quarkus.deployment.builditem.nativeimage.NativeImageSystemPropertyBuil
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveMethodBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
-import io.quarkus.deployment.builditem.nativeimage.RuntimeReinitializedClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.UnsafeAccessedFieldBuildItem;
 import io.quarkus.deployment.logging.LogCleanupFilterBuildItem;
 
@@ -66,18 +66,12 @@ class NettyProcessor {
     }
 
     @BuildStep
-    public SystemPropertyBuildItem setNettyMachineId() {
+    public GeneratedRuntimeSystemPropertyBuildItem setNettyMachineId() {
         // we set the com.couchbase.client.core.deps.io.netty.machineId system property so to prevent potential
         // slowness when generating/inferring the default machine id in com.couchbase.client.core.deps.io.netty.channel.DefaultChannelId
         // implementation, which iterates over the NetworkInterfaces to determine the "best" machine id
-
-        // borrowed from com.couchbase.client.core.deps.io.netty.util.internal.MacAddressUtil.EUI64_MAC_ADDRESS_LENGTH
-        final int EUI64_MAC_ADDRESS_LENGTH = 8;
-        final byte[] machineIdBytes = new byte[EUI64_MAC_ADDRESS_LENGTH];
-        new Random().nextBytes(machineIdBytes);
-        final String nettyMachineId = com.couchbase.client.core.deps.io.netty.util.internal.MacAddressUtil
-                .formatAddress(machineIdBytes);
-        return new SystemPropertyBuildItem("com.couchbase.client.core.deps.io.netty.machineId", nettyMachineId);
+        return new GeneratedRuntimeSystemPropertyBuildItem("com.couchbase.client.core.deps.io.netty.machineId",
+                MachineIdGenerator.class);
     }
 
     @BuildStep
@@ -265,7 +259,11 @@ class NettyProcessor {
                 // - com.couchbase.client.core.deps.io.netty.tryUnsafe
                 // - org.jboss.netty.tryUnsafe
                 // - com.couchbase.client.core.deps.io.netty.tryReflectionSetAccessible
-                .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent0");
+                .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent0")
+                // Runtime initialize classes to allow netty to use the field offset for testing if unsafe is available or not
+                // See https://github.com/quarkusio/quarkus/issues/47903#issuecomment-2890924970
+                .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.util.AbstractReferenceCounted")
+                .addRuntimeReinitializedClass("com.couchbase.client.core.deps.io.netty.buffer.AbstractReferenceCountedByteBuf");
 
         if (QuarkusClassLoader
                 .isClassPresentAtRuntime("com.couchbase.client.core.deps.io.netty.buffer.UnpooledByteBufAllocator")) {
@@ -372,8 +370,8 @@ class NettyProcessor {
     }
 
     @BuildStep
-    public RuntimeReinitializedClassBuildItem reinitScheduledFutureTask() {
-        return new RuntimeReinitializedClassBuildItem(
+    public RuntimeInitializedClassBuildItem reinitScheduledFutureTask() {
+        return new RuntimeInitializedClassBuildItem(
                 "com.couchbase.quarkus.extension.runtime.nettyhandling.runtime.graal.Holder_io_netty_util_concurrent_ScheduledFutureTask");
     }
 
