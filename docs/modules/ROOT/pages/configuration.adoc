@@ -33,3 +33,20 @@ These config items have default values, but can be overridden in `application.pr
 ** *Seconds*: The timeout for the extension's Readiness health check.
 ** *Default*: `3`
 
+=== Security
+Refer to the xref:https://docs.couchbase.com/java-sdk/current/ref/client-settings.html#security-options[Couchbase Java SDK Documentation] for further details on security options.
+All the following options use the underlying Couchbase Java SDK's default values if unset.
+
+* `quarkus.couchbase.security.enableTls`
+** *Boolean*: Enable or disable TLS.
+* `quarkus.couchbase.security.enableHostnameVerification`
+** *Boolean*: Enable or disable hostname verification when validating the remote certificate.
+* `quarkus.couchbase.security.enableNativeTls`
+** *Boolean*: Enable or disable netty native TLS (OpenSSL) used for better performance.
+* `quarkus.couchbase.security.ciphers`
+** *String*: A comma-separated list of cipher suites to enable.
+* `quarkus.couchbase.security.trustCertificate`
+** *String*: A path to a single PEM-encoded certificate file.
+
+
+
