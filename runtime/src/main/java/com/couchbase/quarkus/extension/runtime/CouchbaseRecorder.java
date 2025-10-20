@@ -15,7 +15,9 @@
  */
 package com.couchbase.quarkus.extension.runtime;
 
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import com.couchbase.client.java.Cluster;
@@ -47,6 +49,27 @@ public class CouchbaseRecorder {
 
         if (config.preferredServerGroup().isPresent()) {
             env.preferredServerGroup(config.preferredServerGroup().get());
+        }
+
+        if (config.enableNativeTls().isPresent()) {
+            env.securityConfig().enableNativeTls(config.enableNativeTls().get());
+        }
+
+        if (config.enableTls().isPresent()) {
+            env.securityConfig().enableTls(config.enableTls().get());
+        }
+
+        if (config.enableHostnameVerification().isPresent()) {
+            env.securityConfig().enableHostnameVerification(config.enableHostnameVerification().get());
+        }
+
+        if (config.certificatePath().isPresent()) {
+            env.securityConfig().trustCertificate(Path.of(config.certificatePath().get()));
+        }
+
+        if (config.ciphers().isPresent()) {
+            var parsedCiphers = Arrays.asList(config.ciphers().get().split(","));
+            env.securityConfig().ciphers(parsedCiphers);
         }
     }
 }

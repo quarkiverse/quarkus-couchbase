@@ -83,4 +83,36 @@ public interface CouchbaseConfig {
      */
     @WithName("preferredServerGroup")
     Optional<String> preferredServerGroup();
+
+    /**
+     * Whether to enable TLS for the Couchbase connections.
+     */
+    @WithName("security.enableTls")
+    Optional<Boolean> enableTls();
+
+    /**
+     * Whether to enable native TLS (OpenSSL) for better performance.
+     */
+    @WithName("security.enableNativeTls")
+    Optional<Boolean> enableNativeTls();
+
+    /**
+     * The path to a certificate file for TLS connections.
+     */
+    @WithName("security.trustCertificate")
+    Optional<String> certificatePath();
+
+    /**
+     * Whether to enable hostname verification for TLS connections.
+     * Set false to skip hostname verification (carries security risks, not recommended for production).
+     */
+    @WithName("security.enableHostnameVerification")
+    Optional<Boolean> enableHostnameVerification();
+
+    /**
+     * A list of enabled ciphers for TLS connections, separated by commas.
+     */
+    @WithName("security.ciphers")
+    Optional<String> ciphers();
+
 }
