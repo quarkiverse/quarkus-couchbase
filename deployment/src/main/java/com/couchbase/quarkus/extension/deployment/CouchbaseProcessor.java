@@ -32,7 +32,6 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
-import io.quarkus.deployment.builditem.nativeimage.NativeImageConfigBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
@@ -191,17 +190,5 @@ public class CouchbaseProcessor {
     @BuildStep
     NativeImageResourceBuildItem nativeImageResourceBuildItem() {
         return new NativeImageResourceBuildItem("com/couchbase/client/core/env/capella-ca.pem");
-    }
-
-    @BuildStep
-    NativeImageConfigBuildItem nettyCompressionRuntimeInit() {
-        NativeImageConfigBuildItem.Builder builder = NativeImageConfigBuildItem.builder();
-        builder.addRuntimeInitializedClass(
-                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.ZlibCodecFactory");
-        builder.addRuntimeInitializedClass(
-                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.JZlibDecoder");
-        builder.addRuntimeInitializedClass(
-                "com.couchbase.client.core.deps.io.netty.handler.codec.compression.JZlibEncoder");
-        return builder.build();
     }
 }
