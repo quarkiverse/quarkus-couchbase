@@ -92,7 +92,7 @@ You can enable Micrometer metrics by adding the following dependencies to your a
 <dependency>
     <groupId>com.couchbase.client</groupId>
     <artifactId>metrics-micrometer</artifactId>
-    <version>0.7.7</version>
+    <version>3.9.2</version>
 </dependency>
 <dependency>
     <groupId>io.quarkus</groupId>
@@ -112,9 +112,4 @@ It is recommended to enable histograms which aren't enabled by default. Configur
 
 == Unsupported Features
 
-* Connecting to a Cluster using TLS.
-** The Capella certificate is packaged with the SDK and trusted by default. This enables the extension to connect to
-a Capella Cluster with the `couchbases://` connection string in dev mode, however there is currently no exposed config item
-to specify a certificate path or trust store.
 * Using the separate `tracing-opentelemetry` package for the Couchbase Java SDK.
-
