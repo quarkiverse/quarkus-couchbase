@@ -5,9 +5,9 @@
 
 version: 2
 updates:
-  - packageEcosystem: "maven"
+  - package-ecosystem: "maven"
     directory: "/"
     schedule:
       interval: "daily"
     ignore:
-      - dependencyName: "org.apache.maven.plugins:maven-compiler-plugin"
+      - dependency-name: "org.apache.maven.plugins:maven-compiler-plugin"
