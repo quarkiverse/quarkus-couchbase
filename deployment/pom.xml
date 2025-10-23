@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.quarkiverse.couchbase</groupId>
     <artifactId>quarkus-couchbase-parent</artifactId>
-    <version>1.2.0</version>
+    <version>999-SNAPSHOT</version>
   </parent>
   <artifactId>quarkus-couchbase-deployment</artifactId>
   <name>Couchbase Quarkus Extension - Deployment</name>
