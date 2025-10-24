@@ -23,6 +23,7 @@ Integrates Couchbase into Quarkus.
 This extension is currently in beta status.  It supports:
 
 - Dependency injecting a Couchbase `Cluster`.
+- Connecting to a cluster using TLS in native mode (either with the packaged Capella certificate, or a path to a custom one specified with `quarkus.couchbase.security.trustCertificate`)
 - Configuring the Cluster through `application.properties`.  Currently, a minimal set of configuration options is provided.
 - A dev service that starts a Couchbase server in a Docker container. With this you can develop your Quarkus app without having to install Couchbase on your machine.
 - GraalVM/Mandrel/native-image.
@@ -41,7 +42,7 @@ Add it to your project:
 <dependency>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
 </dependency>
 ```
 
@@ -98,7 +99,6 @@ Please refer to the [docs](https://github.com/quarkiverse/quarkus-couchbase/blob
 
 ## Limitations
 The Cluster configuration options are limited cluster credentials, and micrometer metrics emission rate.  
-This means that a Couchbase cluster configured securely and requiring TLS or a client or server certificate, cannot currently be connected to.
 Additional Cluster connections can be created and configured using `Cluster.connect(...)`, however not all code paths have been tested and are therefore not officially supported.
 
 ## License
