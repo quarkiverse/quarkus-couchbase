@@ -24,6 +24,15 @@
         "code",
         "maintenance"
       ]
+    },
+    {
+      "login": "mikereiche",
+      "name": "Michael Reiche",
+      "avatar_url": "https://avatars.githubusercontent.com/u/48999328?v=4",
+      "profile": "https://github.com/mikereiche",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
