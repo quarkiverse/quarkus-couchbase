@@ -28,8 +28,10 @@ import io.smallrye.config.WithName;
 public interface CouchbaseConfig {
     /**
      * The connection string, e.g. "couchbase://10.202.32.32" or "localhost".
+     * Optional when DevServices are enabled with dynamic ports, in which case
+     * it will be automatically set to the container's connection string.
      */
-    String connectionString();
+    Optional<String> connectionString();
 
     /**
      * The username to authenticate with.
@@ -48,6 +50,20 @@ public interface CouchbaseConfig {
     @WithDefault("latest")
     @WithName(("devservices.version"))
     String version();
+
+    /**
+     * The UI port for the Couchbase Dev UI. This is automatically set by DevServices.
+     */
+    @WithName("devservices.ui-port")
+    Optional<Integer> devServicesUiPort();
+
+    /**
+     * Whether to use dynamic ports for DevServices.
+     * When true, TestContainers will use random available ports.
+     */
+    @WithDefault("false")
+    @WithName("devservices.use-dynamic-ports")
+    boolean useDynamicPorts();
 
     /**
      * Whether to enable health checks or not.

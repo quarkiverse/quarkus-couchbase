@@ -24,7 +24,9 @@ public class CouchbaseProducer {
 
     @Produces
     public Cluster produceCluster() throws Exception {
-        return Cluster.connect(config.connectionString(), config.username(), config.password());
+        return Cluster.connect(config.connectionString().orElseThrow(
+                () -> new IllegalStateException("quarkus.couchbase.connection-string is required")),
+                config.username(), config.password());
     }
 
 }

@@ -50,8 +50,20 @@ public class CouchbaseDevService {
             return devService.toBuildItem();
         }
         QuarkusCouchbaseContainer couchbase = startContainer();
+
+        Map<String, String> dynamicConfig = Map.of();
+        if (config.useDynamicPorts()) {
+            // Capture the dynamic connection string and UI port from the running container
+            String connectionString = couchbase.getConnectionString();
+            int uiPort = couchbase.getMappedPort(8091);
+            dynamicConfig = Map.of(
+                    "quarkus.couchbase.connection-string", connectionString,
+                    "quarkus.couchbase.devservices.ui-port", String.valueOf(uiPort));
+        }
+
+        // Pass the dynamic values via config overrides so they're available at runtime
         devService = new RunningDevService(CouchbaseQuarkusExtensionProcessor.FEATURE,
-                couchbase.getContainerId(), couchbase::close, Map.of());
+                couchbase.getContainerId(), couchbase::close, dynamicConfig);
         closeBuildItem.addCloseTask(couchbase::close, true);
         return devService.toBuildItem();
 
@@ -59,15 +71,14 @@ public class CouchbaseDevService {
 
     private QuarkusCouchbaseContainer startContainer() {
         QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(config.version(), config.username(),
-                config.password());
+                config.password(), config.useDynamicPorts());
         couchbase.start();
         return couchbase;
     }
 
     /**
-     * A {@link CouchbaseContainer} that exposes all ports to fixed values.
-     * <p>
-     * This is needed because the default {@link CouchbaseContainer} exposes ports to random values.
+     * A {@link CouchbaseContainer} that exposes all ports to random or fixed values
+     * depending on configuration
      */
     private static class QuarkusCouchbaseContainer extends CouchbaseContainer {
 
@@ -87,27 +98,31 @@ public class CouchbaseDevService {
         private static final int KV_PORT = 11210;
         private static final int KV_SSL_PORT = 11207;
 
-        public QuarkusCouchbaseContainer(String version, String userName, String password) {
+        public QuarkusCouchbaseContainer(String version, String userName, String password, boolean useDynamicPorts) {
             super("couchbase/server:" + version);
             withCredentials(userName, password);
             // we enable all non-enterprise services because we don't know which ones are needed
             withEnabledServices(CouchbaseService.EVENTING, CouchbaseService.INDEX, CouchbaseService.KV,
                     CouchbaseService.QUERY, CouchbaseService.SEARCH);
-            addFixedExposedPort(MGMT_PORT, MGMT_PORT);
-            addFixedExposedPort(MGMT_SSL_PORT, MGMT_SSL_PORT);
-            addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
-            addFixedExposedPort(VIEW_PORT, VIEW_PORT);
-            addFixedExposedPort(VIEW_SSL_PORT, VIEW_SSL_PORT);
-            addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
-            addFixedExposedPort(ANALYTICS_SSL_PORT, ANALYTICS_SSL_PORT);
-            addFixedExposedPort(QUERY_PORT, QUERY_PORT);
-            addFixedExposedPort(QUERY_SSL_PORT, QUERY_SSL_PORT);
-            addFixedExposedPort(SEARCH_PORT, SEARCH_PORT);
-            addFixedExposedPort(SEARCH_SSL_PORT, SEARCH_SSL_PORT);
-            addFixedExposedPort(EVENTING_PORT, EVENTING_PORT);
-            addFixedExposedPort(EVENTING_SSL_PORT, EVENTING_SSL_PORT);
-            addFixedExposedPort(KV_PORT, KV_PORT);
-            addFixedExposedPort(KV_SSL_PORT, KV_SSL_PORT);
+
+            if (!useDynamicPorts) {
+                // Fixed ports mode - map container ports to same host ports
+                addFixedExposedPort(MGMT_PORT, MGMT_PORT);
+                addFixedExposedPort(MGMT_SSL_PORT, MGMT_SSL_PORT);
+                addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
+                addFixedExposedPort(VIEW_PORT, VIEW_PORT);
+                addFixedExposedPort(VIEW_SSL_PORT, VIEW_SSL_PORT);
+                addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
+                addFixedExposedPort(ANALYTICS_SSL_PORT, ANALYTICS_SSL_PORT);
+                addFixedExposedPort(QUERY_PORT, QUERY_PORT);
+                addFixedExposedPort(QUERY_SSL_PORT, QUERY_SSL_PORT);
+                addFixedExposedPort(SEARCH_PORT, SEARCH_PORT);
+                addFixedExposedPort(SEARCH_SSL_PORT, SEARCH_SSL_PORT);
+                addFixedExposedPort(EVENTING_PORT, EVENTING_PORT);
+                addFixedExposedPort(EVENTING_SSL_PORT, EVENTING_SSL_PORT);
+                addFixedExposedPort(KV_PORT, KV_PORT);
+                addFixedExposedPort(KV_SSL_PORT, KV_SSL_PORT);
+            }
         }
     }
 }
