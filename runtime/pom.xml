@@ -16,7 +16,6 @@
     <dependency>
       <groupId>com.couchbase.client</groupId>
       <artifactId>java-client</artifactId>
-      <version>${couchbase.client.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -49,7 +48,6 @@
     <dependency>
       <groupId>com.couchbase.client</groupId>
       <artifactId>metrics-micrometer</artifactId>
-      <version>${couchbase.client.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
