@@ -69,10 +69,9 @@ public class CouchbaseProcessor {
     }
 
     @BuildStep
-    NativeImageProxyDefinitionBuildItem kvProxies() {
-        return new NativeImageProxyDefinitionBuildItem(
-                CoreKvOps.class.getName(),
-                CoreKvBinaryOps.class.getName());
+    void kvProxies(BuildProducer<NativeImageProxyDefinitionBuildItem> proxies) {
+        proxies.produce(new NativeImageProxyDefinitionBuildItem(CoreKvOps.class.getName()));
+        proxies.produce(new NativeImageProxyDefinitionBuildItem(CoreKvBinaryOps.class.getName()));
     }
 
     @BuildStep
