@@ -27,7 +27,6 @@
     <dependency>
       <groupId>com.couchbase.client</groupId>
       <artifactId>metrics-micrometer</artifactId>
-      <version>${couchbase.client.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
