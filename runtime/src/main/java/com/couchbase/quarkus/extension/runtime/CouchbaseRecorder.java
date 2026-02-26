@@ -36,7 +36,8 @@ public class CouchbaseRecorder {
 
         clusterOptions.environment(env -> configureEnvironment(config, env, metricsEnabled));
 
-        return () -> Cluster.connect(config.connectionString(), clusterOptions);
+        return () -> Cluster.connect(config.connectionString().orElseThrow(
+                () -> new IllegalStateException("quarkus.couchbase.connection-string is required")), clusterOptions);
     }
 
     private void configureEnvironment(CouchbaseConfig config, ClusterEnvironment.Builder env, boolean metricsEnabled) {

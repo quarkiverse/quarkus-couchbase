@@ -27,7 +27,6 @@
     <dependency>
       <groupId>com.couchbase.client</groupId>
       <artifactId>metrics-micrometer</artifactId>
-      <version>0.8.0</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -57,6 +56,42 @@
             <goals>
               <goal>build</goal>
             </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <phase>none</phase>
+          </execution>
+          <execution>
+            <id>test-with-dynamic-ports</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <quarkus.couchbase.devservices.use-dynamic-ports>true</quarkus.couchbase.devservices.use-dynamic-ports>
+              </systemPropertyVariables>
+              <reportNameSuffix>dynamic-ports</reportNameSuffix>
+            </configuration>
+          </execution>
+          <execution>
+            <id>test-with-fixed-ports</id>
+            <phase>test</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <systemPropertyVariables>
+                <quarkus.couchbase.devservices.use-dynamic-ports>false</quarkus.couchbase.devservices.use-dynamic-ports>
+                <quarkus.couchbase.connection-string>couchbase://localhost</quarkus.couchbase.connection-string>
+              </systemPropertyVariables>
+              <reportNameSuffix>fixed-ports</reportNameSuffix>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -95,7 +130,7 @@
                 </configuration>
               </execution>
             </executions>
-          </plugin>
+          </plugin>          
         </plugins>
       </build>
       <properties>

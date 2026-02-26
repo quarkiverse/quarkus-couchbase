@@ -9,6 +9,7 @@ These config items do not default to placeholder values, and are required to be 
 
 * `quarkus.couchbase.connection-string`
 ** *String*: Examples `localhost`, `couchbase://127.0.0.1`.
+** *Note*: Optional when DevServices are enabled with dynamic ports. DevServices will automatically set this value.
 * `quarkus.couchbase.username`
 ** *String*: The username to authenticate with.
 * `quarkus.couchbase.password`
@@ -17,6 +18,12 @@ These config items do not default to placeholder values, and are required to be 
 == Optional
 These config items have default values, but can be overridden in `application.properties`.
 
+* `quarkus.couchbase.devservices.use-dynamic-ports`
+** *Boolean*: Whether to use dynamic ports for DevServices. When `true`, TestContainers will use random available ports. When `false`, fixed ports are used (container ports mapped to same host ports).
+** *Default*: `false` (fixed ports mode)
+* `quarkus.couchbase.devservices.version`
+** *String*: The version of the Couchbase server to use for DevServices. See https://hub.docker.com/_/couchbase[Docker Hub] for available versions.
+** *Default*: `latest`
 * `quarkus.couchbase.metrics.enabled`
 ** *Boolean*: Enable or disable Micrometer metrics.
 ** *Default*: `false`

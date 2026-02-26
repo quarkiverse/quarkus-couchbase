@@ -28,8 +28,10 @@ public class CouchbaseDevUiProcessor {
     public CardPageBuildItem pages(CouchbaseConfig config) {
         CardPageBuildItem cardPageBuildItem = new CardPageBuildItem();
 
-        var hostname = extractHostnameFromConnectionString(config.connectionString());
-        var clusterUiUrl = "http://" + hostname + ":8091/ui/index.html";
+        var hostname = extractHostnameFromConnectionString(config.connectionString().orElse("localhost"));
+        // Use the actual mapped port from DevServices, fallback to 8091 if not available
+        int uiPort = config.devServicesUiPort().orElse(8091);
+        var clusterUiUrl = "http://" + hostname + ":" + uiPort + "/ui/index.html";
 
         String JAVA_SDK_DOCS = "https://docs.couchbase.com/java-sdk/current/hello-world/overview.html";
 
