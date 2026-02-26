@@ -64,7 +64,7 @@ public class DevServiceTest {
     private static final String COLLECTION_NAME = "quarkusCollection";
 
     public DevServiceTest(Cluster cluster) {
-        this.cluster = cluster;
+        DevServiceTest.cluster = cluster;
     }
 
     /**
