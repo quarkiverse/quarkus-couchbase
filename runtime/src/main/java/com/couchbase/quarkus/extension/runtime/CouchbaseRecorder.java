@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import org.eclipse.microprofile.config.ConfigProvider;
+
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.env.ClusterEnvironment;
@@ -36,8 +38,12 @@ public class CouchbaseRecorder {
 
         clusterOptions.environment(env -> configureEnvironment(config, env, metricsEnabled));
 
-        return () -> Cluster.connect(config.connectionString().orElseThrow(
-                () -> new IllegalStateException("quarkus.couchbase.connection-string is required")), clusterOptions);
+        return () -> Cluster.connect(
+                ConfigProvider.getConfig()
+                        .getOptionalValue("quarkus.couchbase.connection-string", String.class)
+                        .orElseThrow(() -> new IllegalStateException(
+                                "quarkus.couchbase.connection-string is required")),
+                clusterOptions);
     }
 
     private void configureEnvironment(CouchbaseConfig config, ClusterEnvironment.Builder env, boolean metricsEnabled) {
