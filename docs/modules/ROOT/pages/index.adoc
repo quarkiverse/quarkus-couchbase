@@ -108,7 +108,7 @@ You can enable Micrometer metrics by adding the following dependencies to your a
 
 Set `quarkus.couchbase.metrics.enabled=true` in `application.properties`.
 The emission rate is also configurable with `quarkus.couchbase.metrics.emit-interval`.
-It is recommended to enable histograms which aren't enabled by default. Configuring the `MeterRegistry` is explained on the xref:https://quarkus.io/guides/telemetry-micrometer#customizing-micrometer[Quarkus Docs] and xref:https://docs.couchbase.com/java-sdk/current/howtos/observability-metrics.html#micrometer-integration[Couchbase docs].
+It is recommended to enable histograms which aren't enabled by default. Configuring the `MeterRegistry` is explained on the https://quarkus.io/guides/telemetry-micrometer#customizing-micrometer[Quarkus Docs] and https://docs.couchbase.com/java-sdk/current/howtos/observability-metrics.html#micrometer-integration[Couchbase docs].
 
 == Unsupported Features
 

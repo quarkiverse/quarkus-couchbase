@@ -1,6 +1,6 @@
 = Couchbase Configuration
 
-Full details can be found in the xref:https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseConfig.html.[CouchbaseConfig API Reference].
+Full details can be found in the https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseConfig.html[CouchbaseConfig API Reference].
 
 Currently, a minimal set of configuration options for the `Cluster` bean is provided.
 
@@ -41,7 +41,7 @@ These config items have default values, but can be overridden in `application.pr
 ** *Default*: `3`
 
 === Security
-Refer to the xref:https://docs.couchbase.com/java-sdk/current/ref/client-settings.html#security-options[Couchbase Java SDK Documentation] for further details on security options.
+Refer to the https://docs.couchbase.com/java-sdk/current/ref/client-settings.html#security-options[Couchbase Java SDK Documentation] for further details on security options.
 All the following options use the underlying Couchbase Java SDK's default values if unset.
 
 * `quarkus.couchbase.security.enableTls`
@@ -54,6 +54,3 @@ All the following options use the underlying Couchbase Java SDK's default values
 ** *String*: A comma-separated list of cipher suites to enable.
 * `quarkus.couchbase.security.trustCertificate`
 ** *String*: A path to a single PEM-encoded certificate file.
-
-
-
