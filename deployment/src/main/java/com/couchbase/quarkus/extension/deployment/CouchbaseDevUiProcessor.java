@@ -15,8 +15,10 @@
  */
 package com.couchbase.quarkus.extension.deployment;
 
+import org.eclipse.microprofile.config.ConfigProvider;
+
 import com.couchbase.client.core.util.ConnectionString;
-import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
+import com.couchbase.quarkus.extension.runtime.CouchbaseBuildTimeConfig;
 
 import io.quarkus.deployment.IsDevelopment;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -25,12 +27,15 @@ import io.quarkus.devui.spi.page.Page;
 
 public class CouchbaseDevUiProcessor {
     @BuildStep(onlyIf = IsDevelopment.class)
-    public CardPageBuildItem pages(CouchbaseConfig config) {
+    public CardPageBuildItem pages(CouchbaseBuildTimeConfig buildTimeConfig) {
         CardPageBuildItem cardPageBuildItem = new CardPageBuildItem();
 
-        var hostname = extractHostnameFromConnectionString(config.connectionString().orElse("localhost"));
+        String connectionString = ConfigProvider.getConfig()
+                .getOptionalValue("quarkus.couchbase.connection-string", String.class)
+                .orElse("localhost");
+        var hostname = extractHostnameFromConnectionString(connectionString);
         // Use the actual mapped port from DevServices, fallback to 8091 if not available
-        int uiPort = config.devServicesUiPort().orElse(8091);
+        int uiPort = buildTimeConfig.devServicesUiPort().orElse(8091);
         var clusterUiUrl = "http://" + hostname + ":" + uiPort + "/ui/index.html";
 
         String JAVA_SDK_DOCS = "https://docs.couchbase.com/java-sdk/current/hello-world/overview.html";

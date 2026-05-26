@@ -24,8 +24,8 @@ import io.smallrye.config.WithDefault;
 import io.smallrye.config.WithName;
 
 @ConfigMapping(prefix = "quarkus.couchbase")
-@ConfigRoot(phase = ConfigPhase.BUILD_AND_RUN_TIME_FIXED)
-public interface CouchbaseConfig {
+@ConfigRoot(phase = ConfigPhase.RUN_TIME)
+public interface CouchbaseRuntimeConfig {
     /**
      * The connection string, e.g. "couchbase://10.202.32.32" or "localhost".
      * Optional when DevServices are enabled with dynamic ports, in which case
@@ -44,48 +44,12 @@ public interface CouchbaseConfig {
     String password();
 
     /**
-     * The version of the Couchbase server to connect to during the dev/test phase as dev service.
-     * Default is latest, see the <a href="https://hub.docker.com/_/couchbase">Docker Hub</a> for available versions.
-     */
-    @WithDefault("latest")
-    @WithName(("devservices.version"))
-    String version();
-
-    /**
-     * The UI port for the Couchbase Dev UI. This is automatically set by DevServices.
-     */
-    @WithName("devservices.ui-port")
-    Optional<Integer> devServicesUiPort();
-
-    /**
-     * Whether to use dynamic ports for DevServices.
-     * When true, TestContainers will use random available ports.
-     */
-    @WithDefault("false")
-    @WithName("devservices.use-dynamic-ports")
-    boolean useDynamicPorts();
-
-    /**
-     * Whether to enable health checks or not.
-     */
-    @WithDefault("true")
-    @WithName("health.enabled")
-    boolean healthEnabled();
-
-    /**
      * The timeout for the Ready health check in seconds
      * In other words: "How long you are willing to wait to know whether the cluster is ready or not".
      */
     @WithDefault("3")
     @WithName("health.readiness.timeout")
     int readinessTimeout();
-
-    /**
-     * Whether metrics are enabled
-     */
-    @WithDefault("false")
-    @WithName("metrics.enabled")
-    boolean metricsEnabled();
 
     /**
      * The interval in seconds when metrics are emitted.
@@ -130,5 +94,4 @@ public interface CouchbaseConfig {
      */
     @WithName("security.ciphers")
     Optional<String> ciphers();
-
 }

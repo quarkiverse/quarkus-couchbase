@@ -24,7 +24,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import com.couchbase.client.core.api.kv.CoreKvBinaryOps;
 import com.couchbase.client.core.api.kv.CoreKvOps;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
+import com.couchbase.quarkus.extension.runtime.CouchbaseBuildTimeConfig;
 import com.couchbase.quarkus.extension.runtime.CouchbaseRecorder;
 
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
@@ -45,11 +45,11 @@ public class CouchbaseProcessor {
     @BuildStep
     @Record(ExecutionTime.RUNTIME_INIT)
     public void produceCouchbaseClient(CouchbaseRecorder recorder,
-            CouchbaseConfig config,
+            CouchbaseBuildTimeConfig buildTimeConfig,
             Optional<MetricsCapabilityBuildItem> metricsCapability,
             BuildProducer<SyntheticBeanBuildItem> syntheticBeans) {
 
-        var metricsEnabled = config.metricsEnabled()
+        var metricsEnabled = buildTimeConfig.metricsEnabled()
                 && metricsCapability.isPresent()
                 && metricsCapability.get().metricsSupported(MetricsFactory.MICROMETER);
 
@@ -57,15 +57,15 @@ public class CouchbaseProcessor {
                 .configure(Cluster.class)
                 .scope(ApplicationScoped.class)
                 .unremovable()
-                .supplier(recorder.getCluster(config, metricsEnabled))
+                .supplier(recorder.getCluster(metricsEnabled))
                 .setRuntimeInit()
                 .done());
     }
 
     @BuildStep
-    HealthBuildItem addHealthCheck(CouchbaseConfig couchbaseConfig) {
+    HealthBuildItem addHealthCheck(CouchbaseBuildTimeConfig buildTimeConfig) {
         return new HealthBuildItem("com.couchbase.quarkus.extension.runtime.health.CouchbaseReadyCheck",
-                couchbaseConfig.healthEnabled());
+                buildTimeConfig.healthEnabled());
     }
 
     @BuildStep

@@ -19,10 +19,11 @@ import java.util.Map;
 
 import jakarta.inject.Inject;
 
+import org.eclipse.microprofile.config.ConfigProvider;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.couchbase.CouchbaseService;
 
-import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
+import com.couchbase.quarkus.extension.runtime.CouchbaseBuildTimeConfig;
 
 import io.quarkus.deployment.IsNormal;
 import io.quarkus.deployment.annotations.BuildStep;
@@ -41,7 +42,7 @@ public class CouchbaseDevService {
     static volatile RunningDevService devService;
 
     @Inject
-    CouchbaseConfig config;
+    CouchbaseBuildTimeConfig buildTimeConfig;
 
     @BuildStep
     DevServicesResultBuildItem startCouchBase(
@@ -52,7 +53,7 @@ public class CouchbaseDevService {
         QuarkusCouchbaseContainer couchbase = startContainer();
 
         Map<String, String> dynamicConfig = Map.of();
-        if (config.useDynamicPorts()) {
+        if (buildTimeConfig.useDynamicPorts()) {
             // Capture the dynamic connection string and UI port from the running container
             String connectionString = couchbase.getConnectionString();
             int uiPort = couchbase.getMappedPort(8091);
@@ -70,8 +71,14 @@ public class CouchbaseDevService {
     }
 
     private QuarkusCouchbaseContainer startContainer() {
-        QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(config.version(), config.username(),
-                config.password(), config.useDynamicPorts());
+        // Credentials are runtime config (CouchbaseRuntimeConfig), but the dev-services container
+        // needs to provision them at build time. Read directly from the config provider — these
+        // are sourced from application.properties, so they're visible during the build phase.
+        var config = ConfigProvider.getConfig();
+        String username = config.getValue("quarkus.couchbase.username", String.class);
+        String password = config.getValue("quarkus.couchbase.password", String.class);
+        QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(buildTimeConfig.version(), username, password,
+                buildTimeConfig.useDynamicPorts());
         couchbase.start();
         return couchbase;
     }

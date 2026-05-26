@@ -20,62 +20,64 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import org.eclipse.microprofile.config.ConfigProvider;
-
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.metrics.micrometer.MicrometerMeter;
 
 import io.micrometer.core.instrument.Metrics;
+import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 
 @Recorder
 public class CouchbaseRecorder {
 
-    public Supplier<Cluster> getCluster(CouchbaseConfig config, boolean metricsEnabled) {
-        final ClusterOptions clusterOptions = ClusterOptions.clusterOptions(config.username(), config.password());
+    private final RuntimeValue<CouchbaseRuntimeConfig> config;
 
-        clusterOptions.environment(env -> configureEnvironment(config, env, metricsEnabled));
-
-        return () -> Cluster.connect(
-                ConfigProvider.getConfig()
-                        .getOptionalValue("quarkus.couchbase.connection-string", String.class)
-                        .orElseThrow(() -> new IllegalStateException(
-                                "quarkus.couchbase.connection-string is required")),
-                clusterOptions);
+    public CouchbaseRecorder(RuntimeValue<CouchbaseRuntimeConfig> config) {
+        this.config = config;
     }
 
-    private void configureEnvironment(CouchbaseConfig config, ClusterEnvironment.Builder env, boolean metricsEnabled) {
+    public Supplier<Cluster> getCluster(boolean metricsEnabled) {
+        return () -> {
+            CouchbaseRuntimeConfig c = config.getValue();
+            ClusterOptions clusterOptions = ClusterOptions.clusterOptions(c.username(), c.password());
+            clusterOptions.environment(env -> configureEnvironment(c, env, metricsEnabled));
+            return Cluster.connect(c.connectionString().orElseThrow(
+                    () -> new IllegalStateException("quarkus.couchbase.connection-string is required")), clusterOptions);
+        };
+    }
+
+    private void configureEnvironment(CouchbaseRuntimeConfig c, ClusterEnvironment.Builder env, boolean metricsEnabled) {
         if (metricsEnabled) {
             env.meter(MicrometerMeter.wrap(Metrics.globalRegistry))
                     .loggingMeterConfig(meterConfig -> meterConfig
                             .enabled(true)
-                            .emitInterval(Duration.ofSeconds(config.emitInterval())));
+                            .emitInterval(Duration.ofSeconds(c.emitInterval())));
         }
 
-        if (config.preferredServerGroup().isPresent()) {
-            env.preferredServerGroup(config.preferredServerGroup().get());
+        if (c.preferredServerGroup().isPresent()) {
+            env.preferredServerGroup(c.preferredServerGroup().get());
         }
 
-        if (config.enableNativeTls().isPresent()) {
-            env.securityConfig().enableNativeTls(config.enableNativeTls().get());
+        if (c.enableNativeTls().isPresent()) {
+            env.securityConfig().enableNativeTls(c.enableNativeTls().get());
         }
 
-        if (config.enableTls().isPresent()) {
-            env.securityConfig().enableTls(config.enableTls().get());
+        if (c.enableTls().isPresent()) {
+            env.securityConfig().enableTls(c.enableTls().get());
         }
 
-        if (config.enableHostnameVerification().isPresent()) {
-            env.securityConfig().enableHostnameVerification(config.enableHostnameVerification().get());
+        if (c.enableHostnameVerification().isPresent()) {
+            env.securityConfig().enableHostnameVerification(c.enableHostnameVerification().get());
         }
 
-        if (config.certificatePath().isPresent()) {
-            env.securityConfig().trustCertificate(Path.of(config.certificatePath().get()));
+        if (c.certificatePath().isPresent()) {
+            env.securityConfig().trustCertificate(Path.of(c.certificatePath().get()));
         }
 
-        if (config.ciphers().isPresent()) {
-            var parsedCiphers = Arrays.asList(config.ciphers().get().split(","));
+        if (c.ciphers().isPresent()) {
+            var parsedCiphers = Arrays.asList(c.ciphers().get().split(","));
             env.securityConfig().ciphers(parsedCiphers);
         }
     }
