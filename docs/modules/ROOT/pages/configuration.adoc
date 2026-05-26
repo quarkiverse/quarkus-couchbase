@@ -1,6 +1,6 @@
 = Couchbase Configuration
 
-Full details can be found in the https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseConfig.html[CouchbaseConfig API Reference].
+Full details can be found in the https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseBuildTimeConfig.html[CouchbaseBuildTimeConfig API Reference] (dev-services, health, metrics enablement) and the https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseRuntimeConfig.html[CouchbaseRuntimeConfig API Reference] (connection, credentials, TLS, runtime tuning).
 
 Currently, a minimal set of configuration options for the `Cluster` bean is provided.
 

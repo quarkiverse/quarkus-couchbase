@@ -38,7 +38,7 @@ import com.couchbase.client.core.retry.BestEffortRetryStrategy;
 import com.couchbase.client.core.topology.ClusterTopology;
 import com.couchbase.client.core.topology.NodeIdentifier;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.quarkus.extension.runtime.CouchbaseConfig;
+import com.couchbase.quarkus.extension.runtime.CouchbaseRuntimeConfig;
 
 import io.smallrye.health.api.AsyncHealthCheck;
 import io.smallrye.mutiny.Uni;
@@ -54,7 +54,7 @@ public class CouchbaseReadyCheck implements AsyncHealthCheck {
     Cluster cluster;
 
     @Inject
-    CouchbaseConfig config;
+    CouchbaseRuntimeConfig config;
 
     /**
      * Wait for a Cluster config, then pings the GCCCP connections on each node.
