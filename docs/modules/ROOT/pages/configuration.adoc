@@ -4,6 +4,24 @@ Full details can be found in the https://javadoc.io/doc/io.quarkiverse.couchbase
 
 Currently, a minimal set of configuration options for the `Cluster` bean is provided.
 
+[IMPORTANT]
+====
+Configuration options fall into two categories that differ in *when* they take effect:
+
+* *Run-time options* are read when the application starts. You can change them in `application.properties` (or via environment variables, system properties, etc.) and they take effect on the next *restart*. This covers connection details, credentials, TLS/security, and runtime tuning.
+* *Build-time options* are fixed into the artifact when the application is *built*. Changing them in `application.properties` after the build has no effect. The application must be recompiled. These options control which features are wired in (DevServices, health checks, metrics).
+
+The following options are *build-time* and require a rebuild to change:
+
+* `quarkus.couchbase.devservices.version`
+* `quarkus.couchbase.devservices.use-dynamic-ports`
+* `quarkus.couchbase.devservices.ui-port`
+* `quarkus.couchbase.health.enabled`
+* `quarkus.couchbase.metrics.enabled`
+
+*Every other option is run-time* and can be changed without rebuilding.
+====
+
 == Required:
 These config items do not default to placeholder values, and are required to be set in `application.properties`.
 
@@ -18,13 +36,13 @@ These config items do not default to placeholder values, and are required to be 
 == Optional
 These config items have default values, but can be overridden in `application.properties`.
 
-* `quarkus.couchbase.devservices.use-dynamic-ports`
+* `quarkus.couchbase.devservices.use-dynamic-ports` _(build-time)_
 ** *Boolean*: Whether to use dynamic ports for DevServices. When `true`, TestContainers will use random available ports. When `false`, fixed ports are used (container ports mapped to same host ports).
 ** *Default*: `false` (fixed ports mode)
-* `quarkus.couchbase.devservices.version`
+* `quarkus.couchbase.devservices.version` _(build-time)_
 ** *String*: The version of the Couchbase server to use for DevServices. See https://hub.docker.com/_/couchbase[Docker Hub] for available versions.
 ** *Default*: `latest`
-* `quarkus.couchbase.metrics.enabled`
+* `quarkus.couchbase.metrics.enabled` _(build-time)_
 ** *Boolean*: Enable or disable Micrometer metrics.
 ** *Default*: `false`
 * `quarkus.couchbase.metrics.emit-interval`
@@ -33,7 +51,7 @@ These config items have default values, but can be overridden in `application.pr
 * `quarkus.couchbase.preferredServerGroup`
 ** *String*: The preferred server group for operations which support it.
 ** *Default*: None
-* `quarkus.couchbase.health.enabled`
+* `quarkus.couchbase.health.enabled` _(build-time)_
 ** *Boolean*: Enable or disable SmallRye health checks (Readiness check).
 ** *Default*: `true`
 * `quarkus.couchbase.health.readiness.timeout`
