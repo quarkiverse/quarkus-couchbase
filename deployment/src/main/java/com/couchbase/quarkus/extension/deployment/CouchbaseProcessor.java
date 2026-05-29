@@ -21,8 +21,12 @@ import java.util.Optional;
 
 import jakarta.enterprise.context.ApplicationScoped;
 
+import org.jboss.jandex.DotName;
+import org.jboss.jandex.Type;
+
 import com.couchbase.client.core.api.kv.CoreKvBinaryOps;
 import com.couchbase.client.core.api.kv.CoreKvOps;
+import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.quarkus.extension.runtime.CouchbaseBuildTimeConfig;
 import com.couchbase.quarkus.extension.runtime.CouchbaseRecorder;
@@ -58,6 +62,21 @@ public class CouchbaseProcessor {
                 .scope(ApplicationScoped.class)
                 .unremovable()
                 .supplier(recorder.getCluster(metricsEnabled))
+                .setRuntimeInit()
+                .done());
+    }
+
+    @BuildStep
+    @Record(ExecutionTime.RUNTIME_INIT)
+    public void produceBucket(CouchbaseRecorder recorder,
+            BuildProducer<SyntheticBeanBuildItem> syntheticBeans) {
+
+        syntheticBeans.produce(SyntheticBeanBuildItem
+                .configure(Bucket.class)
+                .scope(ApplicationScoped.class)
+                .unremovable()
+                .addInjectionPoint(Type.create(DotName.createSimple(Cluster.class.getName()), Type.Kind.CLASS))
+                .createWith(recorder.getBucket())
                 .setRuntimeInit()
                 .done());
     }

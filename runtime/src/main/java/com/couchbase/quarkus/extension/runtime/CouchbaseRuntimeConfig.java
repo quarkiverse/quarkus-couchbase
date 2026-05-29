@@ -44,6 +44,12 @@ public interface CouchbaseRuntimeConfig {
     String password();
 
     /**
+     * The name of the bucket to expose as an injectable {@code Bucket} bean.
+     * Required only if a {@code Bucket} is injected.
+     */
+    Optional<String> bucketName();
+
+    /**
      * The timeout for the Ready health check in seconds
      * In other words: "How long you are willing to wait to know whether the cluster is ready or not".
      */

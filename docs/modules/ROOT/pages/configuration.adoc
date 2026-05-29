@@ -48,6 +48,9 @@ These config items have default values, but can be overridden in `application.pr
 * `quarkus.couchbase.metrics.emit-interval`
 ** *Seconds*: The interval at which metrics are emitted.
 ** *Default*: `600` (10min)
+* `quarkus.couchbase.bucket-name`
+** *String*: A bucket exposed as an injectable `Bucket` bean. Only required if a `Bucket` is injected.
+** *Default*: None
 * `quarkus.couchbase.preferredServerGroup`
 ** *String*: The preferred server group for operations which support it.
 ** *Default*: None

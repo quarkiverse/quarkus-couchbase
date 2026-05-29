@@ -21,6 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
+import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 
 @Path("/couchbase-quarkus-extension")
@@ -28,6 +29,9 @@ import com.couchbase.client.java.Cluster;
 public class CouchbaseQuarkusExtensionResource {
     @Inject
     Cluster cluster;
+
+    @Inject
+    Bucket bucket;
 
     @GET
     @Path("/clusterCheck")
@@ -46,10 +50,16 @@ public class CouchbaseQuarkusExtensionResource {
     @GET
     @Path("/kvCheck")
     public String kvCheck() {
-        var collection = cluster.bucket("default").scope("_default").collection("_default");
+        var collection = bucket.scope("_default").collection("_default");
         collection.upsert("QuarkusTestDoc", "test success");
         var getResult = collection.get("QuarkusTestDoc");
         return getResult.toString();
+    }
+
+    @GET
+    @Path("/bucketCheck")
+    public String bucketCheck() {
+        return bucket.name();
     }
 
     @GET

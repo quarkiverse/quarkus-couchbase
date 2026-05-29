@@ -33,4 +33,13 @@ public class CouchbaseQuarkusExtensionResourceTest {
                 .statusCode(200)
                 .body(is("Hello couchbase-quarkus-extension"));
     }
+
+    @Test
+    public void testBucketCheckEndpoint() {
+        given()
+                .when().get("/couchbase-quarkus-extension/bucketCheck")
+                .then()
+                .statusCode(200)
+                .body(is("default"));
+    }
 }
