@@ -45,6 +45,14 @@ public class CouchbaseDevUiProcessor {
                 .doNotEmbed()
                 .icon("font-awesome-solid:database"));
 
+        // Only shown when a bucket bean is registered via quarkus.couchbase.bucket-name.
+        ConfigProvider.getConfig()
+                .getOptionalValue("quarkus.couchbase.bucket-name", String.class)
+                .ifPresent(bucketName -> cardPageBuildItem.addPage(Page.externalPageBuilder("Bucket: " + bucketName)
+                        .url(clusterUiUrl, clusterUiUrl)
+                        .doNotEmbed()
+                        .icon("font-awesome-solid:box")));
+
         cardPageBuildItem.addPage(Page.externalPageBuilder("Java SDK Docs")
                 .url(JAVA_SDK_DOCS, JAVA_SDK_DOCS)
                 .doNotEmbed()

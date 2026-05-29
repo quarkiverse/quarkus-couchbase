@@ -54,6 +54,7 @@ import reactor.core.publisher.Mono;
 public class DevServiceTest {
 
     private static Cluster cluster;
+    private static Bucket injectedBucket;
 
     private static Bucket bucket;
     private static Scope scope;
@@ -63,8 +64,9 @@ public class DevServiceTest {
     private static final String SCOPE_NAME = "quarkusScope";
     private static final String COLLECTION_NAME = "quarkusCollection";
 
-    public DevServiceTest(Cluster cluster) {
+    public DevServiceTest(Cluster cluster, Bucket injectedBucket) {
         DevServiceTest.cluster = cluster;
+        DevServiceTest.injectedBucket = injectedBucket;
     }
 
     /**
@@ -105,6 +107,16 @@ public class DevServiceTest {
 
         scope = bucket.scope(SCOPE_NAME);
         collection = scope.collection(COLLECTION_NAME);
+    }
+
+    @Test
+    void injectedBucketBeanIsUsable() {
+        assertEquals(BUCKET_NAME, injectedBucket.name());
+
+        String id = UUID.randomUUID().toString();
+        Collection injectedCollection = injectedBucket.scope(SCOPE_NAME).collection(COLLECTION_NAME);
+        injectedCollection.insert(id, FOO_CONTENT);
+        assertEquals(FOO_CONTENT, injectedCollection.get(id).contentAsObject());
     }
 
     @Test

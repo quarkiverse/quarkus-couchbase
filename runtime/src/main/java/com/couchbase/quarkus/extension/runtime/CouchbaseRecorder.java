@@ -18,14 +18,17 @@ package com.couchbase.quarkus.extension.runtime;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.metrics.micrometer.MicrometerMeter;
 
 import io.micrometer.core.instrument.Metrics;
+import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
 
@@ -45,6 +48,17 @@ public class CouchbaseRecorder {
             clusterOptions.environment(env -> configureEnvironment(c, env, metricsEnabled));
             return Cluster.connect(c.connectionString().orElseThrow(
                     () -> new IllegalStateException("quarkus.couchbase.connection-string is required")), clusterOptions);
+        };
+    }
+
+    public Function<SyntheticCreationalContext<Bucket>, Bucket> getBucket() {
+        return context -> {
+            String bucketName = config.getValue().bucketName()
+                    .filter(name -> !name.isBlank())
+                    .orElseThrow(
+                            () -> new IllegalStateException("quarkus.couchbase.bucket-name is required to inject a Bucket"));
+            Cluster cluster = context.getInjectedReference(Cluster.class);
+            return cluster.bucket(bucketName);
         };
     }
 
