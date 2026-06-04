@@ -33,9 +33,7 @@ import org.junit.jupiter.api.TestInstance;
 
 import com.couchbase.client.core.error.BucketExistsException;
 import com.couchbase.client.core.error.CasMismatchException;
-import com.couchbase.client.core.error.CollectionExistsException;
 import com.couchbase.client.core.error.DocumentNotFoundException;
-import com.couchbase.client.core.error.ScopeExistsException;
 import com.couchbase.client.core.util.ConsistencyUtil;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
@@ -94,22 +92,30 @@ public class DevServiceTest {
         bucket = cluster.bucket(BUCKET_NAME);
         bucket.waitUntilReady(Duration.ofSeconds(20));
 
-        try {
+        if (!scopeExists(SCOPE_NAME)) {
             bucket.collections().createScope(SCOPE_NAME);
             ConsistencyUtil.waitUntilScopePresent(cluster.core(), BUCKET_NAME, SCOPE_NAME);
-        } catch (ScopeExistsException exists) {
-            logger.info("Scope already exists, skipping scope creation.");
         }
 
-        try {
+        if (!collectionExists(SCOPE_NAME, COLLECTION_NAME)) {
             bucket.collections().createCollection(SCOPE_NAME, COLLECTION_NAME);
             ConsistencyUtil.waitUntilCollectionPresent(cluster.core(), BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
-        } catch (CollectionExistsException exists) {
-            logger.info("Collection already exists, skipping collection creation.");
         }
 
         scope = bucket.scope(SCOPE_NAME);
         collection = scope.collection(COLLECTION_NAME);
+    }
+
+    private boolean scopeExists(String scopeName) {
+        return bucket.collections().getAllScopes().stream()
+                .anyMatch(s -> s.name().equals(scopeName));
+    }
+
+    private boolean collectionExists(String scopeName, String collectionName) {
+        return bucket.collections().getAllScopes().stream()
+                .filter(s -> s.name().equals(scopeName))
+                .flatMap(s -> s.collections().stream())
+                .anyMatch(c -> c.name().equals(collectionName));
     }
 
     @Test

@@ -127,9 +127,12 @@ public class CouchbaseDevService {
         private static final int KV_PORT = 11210;
         private static final int KV_SSL_PORT = 11207;
 
+        private final boolean useDynamicPorts;
+
         public QuarkusCouchbaseContainer(String version, String userName, String password, boolean useDynamicPorts,
                 Optional<String> bucketName) {
             super("couchbase/server:" + version);
+            this.useDynamicPorts = useDynamicPorts;
             withCredentials(userName, password);
             // we enable all non-enterprise services because we don't know which ones are needed
             withEnabledServices(CouchbaseService.EVENTING, CouchbaseService.INDEX, CouchbaseService.KV,
@@ -138,10 +141,9 @@ public class CouchbaseDevService {
             bucketName.ifPresent(name -> withBucket(new BucketDefinition(name)));
 
             if (!useDynamicPorts) {
-                // Fixed ports mode - map container ports to same host ports
+                // Fixed ports mode, map container ports to the same host ports.
                 addFixedExposedPort(MGMT_PORT, MGMT_PORT);
                 addFixedExposedPort(MGMT_SSL_PORT, MGMT_SSL_PORT);
-                addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
                 addFixedExposedPort(VIEW_PORT, VIEW_PORT);
                 addFixedExposedPort(VIEW_SSL_PORT, VIEW_SSL_PORT);
                 addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
@@ -155,6 +157,20 @@ public class CouchbaseDevService {
                 addFixedExposedPort(KV_PORT, KV_PORT);
                 addFixedExposedPort(KV_SSL_PORT, KV_SSL_PORT);
             }
+        }
+
+        /**
+         * In fixed-ports mode each container port is also published on the identical host port. The
+         * parent {@link CouchbaseContainer} still adds its own dynamic (random) bindings for those
+         * same ports, which makes the inherited {@link #getMappedPort(int)} ambiguous. Everything in
+         * the parent's bootstrap relies on the {@code renameNode} call, the
+         * {@code setupAlternateAddresses/external} call that tells the SDK which host ports to use,
+         * and the readiness wait strategies. We pin it to the fixed port to keep the advertised
+         * ports, the published bindings, and our connection string is consistent.
+         */
+        @Override
+        public Integer getMappedPort(int originalPort) {
+            return useDynamicPorts ? super.getMappedPort(originalPort) : originalPort;
         }
     }
 }
