@@ -10,7 +10,7 @@ include::./includes/attributes.adoc[]
 
 Integrates Couchbase into Quarkus.
 
-This extension is currently in beta status. It supports:
+This extension currently supports:
 
 - Dependency injecting a Couchbase `Cluster`.
 - Configuring the Cluster through `application.properties`. Currently, a minimal set of configuration options is provided.
@@ -81,6 +81,12 @@ public class TestCouchbaseResource {
 ----
 
 And test it at http://localhost:8080/couchbase/test.
+
+== Dev Services
+
+DevServices (Couchbase TestContainers) activate when `quarkus.devservices.enabled` is `true` and no `quarkus.couchbase.connection-string` is set.
+
+Setting `quarkus.couchbase.connection-string` (for example to point at a real cluster or Capella) disables DevServices.
 
 == Micrometer Metrics
 

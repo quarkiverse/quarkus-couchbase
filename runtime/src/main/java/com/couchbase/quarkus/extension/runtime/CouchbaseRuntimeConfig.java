@@ -35,11 +35,13 @@ public interface CouchbaseRuntimeConfig {
 
     /**
      * The username to authenticate with.
+     * Required, except when DevServices starts a container, in which case it is injected
      */
     String username();
 
     /**
      * The password to authenticate with.
+     * Required, except when DevServices starts a container, in which case it is injected
      */
     String password();
 
