@@ -26,13 +26,13 @@ These config items do not default to placeholder values, and are required to be 
 
 * `quarkus.couchbase.connection-string`
 ** *String*: Examples `localhost`, `couchbase://127.0.0.1`.
-** *Note*: Optional when DevServices are enabled. When unset, DevServices starts a Couchbase container and automatically sets this value (for both fixed and dynamic ports). When set, DevServices is disabled, and the explicit connection string takes precedence (no container is started).
+** *Note*: This should be unset if using DevServices, else the TestContainer won't start.
 * `quarkus.couchbase.username`
 ** *String*: The username to authenticate with.
-** *Note*: Not required when DevServices starts a container — it is then injected, defaulting to `Administrator`.
+** *Note*: Not required when DevServices starts a container, injected to `Administrator`.
 * `quarkus.couchbase.password`
 ** *String*: The password to authenticate with.
-** *Note*: Not required when DevServices starts a container — it is then injected, defaulting to `password`.
+** *Note*: Not required when DevServices starts a container injected to `password`.
 
 == Optional
 These config items have default values, but can be overridden in `application.properties`.

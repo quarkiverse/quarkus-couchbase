@@ -160,13 +160,8 @@ public class CouchbaseDevService {
         }
 
         /**
-         * In fixed-ports mode each container port is also published on the identical host port. The
-         * parent {@link CouchbaseContainer} still adds its own dynamic (random) bindings for those
-         * same ports, which makes the inherited {@link #getMappedPort(int)} ambiguous. Everything in
-         * the parent's bootstrap relies on the {@code renameNode} call, the
-         * {@code setupAlternateAddresses/external} call that tells the SDK which host ports to use,
-         * and the readiness wait strategies. We pin it to the fixed port to keep the advertised
-         * ports, the published bindings, and our connection string is consistent.
+         * In fixed-ports mode, return the original port instead of the parent's random mapping so the
+         * container's advertised ports, bindings, and connection string all stay consistent.
          */
         @Override
         public Integer getMappedPort(int originalPort) {
