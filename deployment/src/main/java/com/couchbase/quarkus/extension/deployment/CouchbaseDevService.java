@@ -16,10 +16,13 @@
 package com.couchbase.quarkus.extension.deployment;
 
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.inject.Inject;
 
 import org.eclipse.microprofile.config.ConfigProvider;
+import org.jboss.logging.Logger;
+import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.couchbase.CouchbaseService;
 
@@ -39,6 +42,10 @@ import io.quarkus.deployment.dev.devservices.DevServicesConfig;
 @BuildSteps(onlyIfNot = IsNormal.class, onlyIf = DevServicesConfig.Enabled.class)
 public class CouchbaseDevService {
 
+    private static final Logger log = Logger.getLogger(CouchbaseDevService.class);
+    private static final String DEFAULT_USERNAME = "Administrator";
+    private static final String DEFAULT_PASSWORD = "password";
+
     static volatile RunningDevService devService;
 
     @Inject
@@ -47,20 +54,36 @@ public class CouchbaseDevService {
     @BuildStep
     DevServicesResultBuildItem startCouchBase(
             CuratedApplicationShutdownBuildItem closeBuildItem) {
+
+        if (ConfigProvider.getConfig()
+                .getOptionalValue("quarkus.couchbase.connection-string", String.class)
+                .filter(connectionString -> !connectionString.isBlank())
+                .isPresent()) {
+            log.info("quarkus.couchbase.connection-string is set, skipping TestContainer deployment.");
+            return null;
+        }
+
         if (devService != null) {
             return devService.toBuildItem();
         }
-        QuarkusCouchbaseContainer couchbase = startContainer();
 
-        Map<String, String> dynamicConfig = Map.of();
-        if (buildTimeConfig.useDynamicPorts()) {
-            // Capture the dynamic connection string and UI port from the running container
-            String connectionString = couchbase.getConnectionString();
-            int uiPort = couchbase.getMappedPort(8091);
-            dynamicConfig = Map.of(
-                    "quarkus.couchbase.connection-string", connectionString,
-                    "quarkus.couchbase.devservices.ui-port", String.valueOf(uiPort));
-        }
+        // Credentials are required runtime config, but when DevServices provisions a container we
+        // supply them ourselves (defaulting if unset) and inject the same values at runtime so the
+        // app needs no credential configuration to connect to the container.
+        var config = ConfigProvider.getConfig();
+        String username = config.getOptionalValue("quarkus.couchbase.username", String.class).orElse(DEFAULT_USERNAME);
+        String password = config.getOptionalValue("quarkus.couchbase.password", String.class).orElse(DEFAULT_PASSWORD);
+
+        QuarkusCouchbaseContainer couchbase = startContainer(username, password);
+
+        // The container always determines the connection string and UI port whether
+        // dynamic or fixed, so we inject both at runtime. Since we only reach this point when no
+        // connection string was set, we can safely set it.
+        Map<String, String> dynamicConfig = Map.of(
+                "quarkus.couchbase.connection-string", couchbase.getConnectionString(),
+                "quarkus.couchbase.username", username,
+                "quarkus.couchbase.password", password,
+                "quarkus.couchbase.devservices.ui-port", String.valueOf(couchbase.getMappedPort(8091)));
 
         // Pass the dynamic values via config overrides so they're available at runtime
         devService = new RunningDevService(CouchbaseQuarkusExtensionProcessor.FEATURE,
@@ -70,15 +93,14 @@ public class CouchbaseDevService {
 
     }
 
-    private QuarkusCouchbaseContainer startContainer() {
-        // Credentials are runtime config (CouchbaseRuntimeConfig), but the dev-services container
-        // needs to provision them at build time. Read directly from the config provider — these
-        // are sourced from application.properties, so they're visible during the build phase.
-        var config = ConfigProvider.getConfig();
-        String username = config.getValue("quarkus.couchbase.username", String.class);
-        String password = config.getValue("quarkus.couchbase.password", String.class);
+    private QuarkusCouchbaseContainer startContainer(String username, String password) {
+        // bucket-name is runtime config but sourced from application.properties, so it's visible
+        // during the build phase. Provision that bucket so an injected Bucket bean is usable.
+        Optional<String> bucketName = ConfigProvider.getConfig()
+                .getOptionalValue("quarkus.couchbase.bucket-name", String.class)
+                .filter(name -> !name.isBlank());
         QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(buildTimeConfig.version(), username, password,
-                buildTimeConfig.useDynamicPorts());
+                buildTimeConfig.useDynamicPorts(), bucketName);
         couchbase.start();
         return couchbase;
     }
@@ -105,18 +127,23 @@ public class CouchbaseDevService {
         private static final int KV_PORT = 11210;
         private static final int KV_SSL_PORT = 11207;
 
-        public QuarkusCouchbaseContainer(String version, String userName, String password, boolean useDynamicPorts) {
+        private final boolean useDynamicPorts;
+
+        public QuarkusCouchbaseContainer(String version, String userName, String password, boolean useDynamicPorts,
+                Optional<String> bucketName) {
             super("couchbase/server:" + version);
+            this.useDynamicPorts = useDynamicPorts;
             withCredentials(userName, password);
             // we enable all non-enterprise services because we don't know which ones are needed
             withEnabledServices(CouchbaseService.EVENTING, CouchbaseService.INDEX, CouchbaseService.KV,
                     CouchbaseService.QUERY, CouchbaseService.SEARCH);
 
+            bucketName.ifPresent(name -> withBucket(new BucketDefinition(name)));
+
             if (!useDynamicPorts) {
-                // Fixed ports mode - map container ports to same host ports
+                // Fixed ports mode, map container ports to the same host ports.
                 addFixedExposedPort(MGMT_PORT, MGMT_PORT);
                 addFixedExposedPort(MGMT_SSL_PORT, MGMT_SSL_PORT);
-                addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
                 addFixedExposedPort(VIEW_PORT, VIEW_PORT);
                 addFixedExposedPort(VIEW_SSL_PORT, VIEW_SSL_PORT);
                 addFixedExposedPort(ANALYTICS_PORT, ANALYTICS_PORT);
@@ -130,6 +157,15 @@ public class CouchbaseDevService {
                 addFixedExposedPort(KV_PORT, KV_PORT);
                 addFixedExposedPort(KV_SSL_PORT, KV_SSL_PORT);
             }
+        }
+
+        /**
+         * In fixed-ports mode, return the original port instead of the parent's random mapping so the
+         * container's advertised ports, bindings, and connection string all stay consistent.
+         */
+        @Override
+        public Integer getMappedPort(int originalPort) {
+            return useDynamicPorts ? super.getMappedPort(originalPort) : originalPort;
         }
     }
 }

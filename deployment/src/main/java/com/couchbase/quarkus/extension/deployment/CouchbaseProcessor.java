@@ -198,7 +198,10 @@ public class CouchbaseProcessor {
                 "com.couchbase.client.core.io.netty.SslHandlerFactory$InitOnDemandHolder",
                 "com.couchbase.client.core.cnc.apptelemetry.reporter.AppTelemetryReporterImpl", // has static Random instance
                 "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslEngine",
-                "com.couchbase.client.core.endpoint.http.CoreHttpRequest$Builder");
+                "com.couchbase.client.core.endpoint.http.CoreHttpRequest$Builder",
+                // has a static JsonMapper (from the shaded Jackson) used to parse the cluster config.
+                // At build time it captures a live ForkJoinWorkerThread into the heap, which breaks native compilation
+                "com.couchbase.client.core.topology.JacksonHelper");
 
         for (String className : classes) {
             runtimeInitialized.produce(new RuntimeInitializedClassBuildItem(className));

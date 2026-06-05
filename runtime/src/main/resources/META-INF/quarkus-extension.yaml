@@ -12,4 +12,4 @@ metadata:
   config:
     - "quarkus.couchbase."
   iconUrl: "https://raw.githubusercontent.com/quarkiverse/quarkus-couchbase/master/docs/modules/ROOT/assets/images/couchbase-filled.svg"
-  status: "preview"
+  status: "stable"

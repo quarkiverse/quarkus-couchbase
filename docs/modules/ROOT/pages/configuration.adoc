@@ -4,7 +4,6 @@ Full details can be found in the https://javadoc.io/doc/io.quarkiverse.couchbase
 
 Currently, a minimal set of configuration options for the `Cluster` bean is provided.
 
-[IMPORTANT]
 ====
 Configuration options fall into two categories that differ in *when* they take effect:
 
@@ -27,11 +26,13 @@ These config items do not default to placeholder values, and are required to be 
 
 * `quarkus.couchbase.connection-string`
 ** *String*: Examples `localhost`, `couchbase://127.0.0.1`.
-** *Note*: Optional when DevServices are enabled with dynamic ports. DevServices will automatically set this value.
+** *Note*: This should be unset if using DevServices, else the TestContainer won't start.
 * `quarkus.couchbase.username`
 ** *String*: The username to authenticate with.
+** *Note*: Not required when DevServices starts a container, injected to `Administrator`.
 * `quarkus.couchbase.password`
 ** *String*: The password to authenticate with.
+** *Note*: Not required when DevServices starts a container injected to `password`.
 
 == Optional
 These config items have default values, but can be overridden in `application.properties`.
@@ -49,7 +50,7 @@ These config items have default values, but can be overridden in `application.pr
 ** *Seconds*: The interval at which metrics are emitted.
 ** *Default*: `600` (10min)
 * `quarkus.couchbase.bucket-name`
-** *String*: A bucket exposed as an injectable `Bucket` bean. Only required if a `Bucket` is injected.
+** *String*: A bucket exposed as an injectable `Bucket` bean. Only required if a `Bucket` is injected. When DevServices starts a container, this bucket is also provisioned in it so the injected `Bucket` is immediately usable. If unset, DevServices creates no bucket.
 ** *Default*: None
 * `quarkus.couchbase.preferredServerGroup`
 ** *String*: The preferred server group for operations which support it.

@@ -82,31 +82,40 @@ public class DevServiceTest {
 
     @BeforeAll
     void createAndGetKeyspace() {
-        var isKeyspacePresent = false;
-
-        // Checks if the test bucket already exists, assuming the
-        // scope and collection must exist with it. Relevant for continuous testing.
         try {
             cluster.buckets().createBucket(BucketSettings.create(BUCKET_NAME));
-        } catch (BucketExistsException exists) {
-            isKeyspacePresent = true;
-            logger.info("Bucket already exists, skipping keyspace creation.");
-        }
-        // Create Bucket, Scope and Collection
-        if (!isKeyspacePresent) {
             ConsistencyUtil.waitUntilBucketPresent(cluster.core(), BUCKET_NAME);
-            bucket = cluster.bucket(BUCKET_NAME);
-            bucket.waitUntilReady(Duration.ofSeconds(20));
+        } catch (BucketExistsException exists) {
+            logger.info("Bucket already exists, skipping bucket creation.");
+        }
+
+        bucket = cluster.bucket(BUCKET_NAME);
+        bucket.waitUntilReady(Duration.ofSeconds(20));
+
+        if (!scopeExists(SCOPE_NAME)) {
             bucket.collections().createScope(SCOPE_NAME);
             ConsistencyUtil.waitUntilScopePresent(cluster.core(), BUCKET_NAME, SCOPE_NAME);
+        }
+
+        if (!collectionExists(SCOPE_NAME, COLLECTION_NAME)) {
             bucket.collections().createCollection(SCOPE_NAME, COLLECTION_NAME);
             ConsistencyUtil.waitUntilCollectionPresent(cluster.core(), BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
-        } else {
-            bucket = cluster.bucket(BUCKET_NAME);
         }
 
         scope = bucket.scope(SCOPE_NAME);
         collection = scope.collection(COLLECTION_NAME);
+    }
+
+    private boolean scopeExists(String scopeName) {
+        return bucket.collections().getAllScopes().stream()
+                .anyMatch(s -> s.name().equals(scopeName));
+    }
+
+    private boolean collectionExists(String scopeName, String collectionName) {
+        return bucket.collections().getAllScopes().stream()
+                .filter(s -> s.name().equals(scopeName))
+                .flatMap(s -> s.collections().stream())
+                .anyMatch(c -> c.name().equals(collectionName));
     }
 
     @Test
