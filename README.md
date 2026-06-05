@@ -42,7 +42,7 @@ Add it to your project:
 <dependency>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>1.3.0</version>
+  <version>1.4.0</version>
 </dependency>
 ```
 
@@ -52,18 +52,28 @@ quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
 ```
+
+Since version `1.4.0`, you can also configure and inject a Bucket:
+>The Bucket must exist on the Cluster.
+```properties
+quarkus.couchbase.bucket-name=default
+```
+
 To disable TestContainers, add:
 ```properties
 quarkus.devservices.enabled=false
 ```
 
-Now you can @Inject a Couchbase `Cluster` into your project:
+Now you can `@Inject` a Couchbase `Cluster` or `Bucket` into your project:
 
 ```java
 @Path("/couchbase")
 public class TestCouchbaseResource {
     @Inject
     Cluster cluster;
+    
+    @Inject
+    Bucket bucket;
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
