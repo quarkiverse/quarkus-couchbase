@@ -42,9 +42,12 @@ See the xref:configuration.adoc[Configuration] section for more options and deta
 quarkus.couchbase.connection-string=localhost
 quarkus.couchbase.username=username
 quarkus.couchbase.password=password
+
+# Optional, the name of an existing bucket to inject as a `Bucket` bean. If using DevServices, this bucket is also provisioned in the container.
+quarkus.couchbase.bucket-name=travel-sample
 ----
 
-You can now `@Inject` a Couchbase `Cluster` into your project:
+You can now `@Inject` a Couchbase `Cluster` and `Bucket` into your project:
 
 [source]
 ----
@@ -53,12 +56,13 @@ public class TestCouchbaseResource {
     @Inject
     Cluster cluster;
 
+    @Inject
+    Bucket bucket;
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("/test")
     public String run() {
-        // Get a reference to a particular Couchbase bucket and its default collection
-        var bucket = cluster.bucket("travel-sample");
         var collection = bucket.defaultCollection() ;
 
         // Upsert a new document
