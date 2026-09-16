@@ -112,8 +112,9 @@ The Cluster configuration options are limited cluster credentials, and micromete
 Additional Cluster connections can be created and configured using `Cluster.connect(...)`, however not all code paths have been tested and are therefore not officially supported.
 
 ## License
-All the files under `nettyhandling` directories, both in the `runtime` and `deployment` modules are
-taken as-were or modified from the official [netty](https://github.com/quarkusio/quarkus/tree/main/extensions/netty) extension.
+The Netty substitutions in `runtime/src/main/java/com/couchbase/quarkus/extension/runtime/graal/`
+(`NettyCompressionSubstitutions` and `NettySslSubstitutions`) are adapted from the official
+[netty](https://github.com/quarkusio/quarkus/tree/main/extensions/netty) extension.
 Couchbase does not intend copyright infringement or claim ownership over these files or their content.
 
 ## Contributors ✨
