@@ -72,6 +72,7 @@ All the following options use the underlying Couchbase Java SDK's default values
 ** *Boolean*: Enable or disable hostname verification when validating the remote certificate.
 * `quarkus.couchbase.security.enableNativeTls`
 ** *Boolean*: Enable or disable netty native TLS (OpenSSL) used for better performance.
+** In a native executable the SDK uses the JDK TLS provider, so this option only affects JVM mode.
 * `quarkus.couchbase.security.ciphers`
 ** *String*: A comma-separated list of cipher suites to enable.
 * `quarkus.couchbase.security.trustCertificate`

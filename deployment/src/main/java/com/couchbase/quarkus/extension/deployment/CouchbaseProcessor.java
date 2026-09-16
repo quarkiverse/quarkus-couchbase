@@ -36,10 +36,12 @@ import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
 import io.quarkus.deployment.annotations.Record;
+import io.quarkus.deployment.builditem.NativeImageFeatureBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageProxyDefinitionBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.NativeImageResourceBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.ReflectiveClassBuildItem;
 import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedClassBuildItem;
+import io.quarkus.deployment.builditem.nativeimage.RuntimeInitializedPackageBuildItem;
 import io.quarkus.deployment.metrics.MetricsCapabilityBuildItem;
 import io.quarkus.runtime.metrics.MetricsFactory;
 import io.quarkus.smallrye.health.deployment.spi.HealthBuildItem;
@@ -180,6 +182,8 @@ public class CouchbaseProcessor {
 
     @BuildStep
     void configureRuntimeInitializedClasses(BuildProducer<RuntimeInitializedClassBuildItem> runtimeInitialized) {
+        // Build-time init of these classes would put a runtime-only object, a live thread or an FFM
+        // handle into the image heap.
         List<String> classes = Arrays.asList(
                 "com.couchbase.client.core.deps.org.xbill.DNS.config.WindowsResolverConfigProvider$InnerWindowsResolverConfigProvider",
                 "com.couchbase.client.core.deps.io.netty.util.NetUtilSubstitutions$NetUtilNetworkInterfacesLazyHolder",
@@ -192,20 +196,109 @@ public class CouchbaseProcessor {
                 "com.couchbase.client.core.deps.io.grpc.internal.RetriableStream",
                 "com.couchbase.client.core.msg.kv.RangeScanCreateRequest",
                 "com.couchbase.client.core.deps.org.xbill.DNS.io.DefaultIoClientFactory",
-                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSsl",
-                "com.couchbase.client.core.deps.io.netty.internal.tcnative.SSL",
-                "com.couchbase.client.core.deps.io.netty.internal.tcnative.CertificateVerifier",
                 "com.couchbase.client.core.io.netty.SslHandlerFactory$InitOnDemandHolder",
                 "com.couchbase.client.core.cnc.apptelemetry.reporter.AppTelemetryReporterImpl", // has static Random instance
-                "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslEngine",
                 "com.couchbase.client.core.endpoint.http.CoreHttpRequest$Builder",
-                // has a static JsonMapper (from the shaded Jackson) used to parse the cluster config.
-                // At build time it captures a live ForkJoinWorkerThread into the heap, which breaks native compilation
-                "com.couchbase.client.core.topology.JacksonHelper");
+                // Its static JsonMapper captures a live ForkJoinWorkerThread.
+                "com.couchbase.client.core.topology.JacksonHelper",
+
+                // Stores PooledByteBufAllocator.DEFAULT in a static field. The netty metadata marks
+                // that allocator as runtime-init.
+                "com.couchbase.client.core.endpoint.BaseEndpoint",
+
+                // Netty selects the FFM buffer cleaner in a native image on JDK 25 and later.
+                // CleanerJava24Linker.<clinit> builds malloc and free FFM handles, and PlatformDependent
+                // stores the chosen cleaner in a static field. FFM handles cannot live in the image heap.
+                "com.couchbase.client.core.deps.io.netty.util.internal.CleanerJava24Linker",
+                "com.couchbase.client.core.deps.io.netty.util.internal.PlatformDependent",
+
+                // OpenSSL classes. Their <clinit> calls into tcnative, which cannot run at build time.
+                // At runtime OpenSsl.isAvailable() returns false and the SDK uses JDK TLS.
+                // Listed per class because handler.ssl also holds JDK TLS classes that must stay
+                // build-time init.
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.DefaultOpenSslCredential",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.DefaultOpenSslKeyMaterial",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.ExtendedOpenSslSession",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.JdkDelegatingPrivateKeyMethod",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.NonOwnedOpenSslCredential",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSsl",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslApplicationProtocolNegotiator",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslAsyncPrivateKeyMethod",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCachingKeyMaterialProvider",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCachingX509KeyManagerFactory",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCertificateCompressionAlgorithm",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCertificateCompressionConfig",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCertificateException",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslClientContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslClientSessionCache",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslContextOption",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCredential",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCredentialBuilder",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslCredentialPointer",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslDefaultApplicationProtocolNegotiator",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslEngine",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslInternalSession",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslKeyMaterial",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslKeyMaterialManager",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslKeyMaterialProvider",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslNpnApplicationProtocolNegotiator",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslParametersUtil",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslPrivateKey",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslPrivateKeyMethod",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslServerContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslServerSessionContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslSession",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslSessionCache",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslSessionContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslSessionId",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslSessionStats",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslSessionTicketKey",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslX509KeyManagerFactory",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.OpenSslX509TrustManagerWrapper",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslClientContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslContext",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslEngine",
+                "com.couchbase.client.core.deps.io.netty.handler.ssl.ReferenceCountedOpenSslServerContext");
 
         for (String className : classes) {
             runtimeInitialized.produce(new RuntimeInitializedClassBuildItem(className));
         }
+    }
+
+    @BuildStep
+    RuntimeInitializedPackageBuildItem tcnativeRuntimeInit() {
+        // Shaded netty-tcnative, the JNI bindings to the BoringSSL library inside the SDK jar.
+        // Each <clinit> calls a native method, so build-time init fails. At runtime the load fails
+        // and the SDK uses JDK TLS.
+        return new RuntimeInitializedPackageBuildItem(
+                "com.couchbase.client.core.deps.io.netty.internal.tcnative");
+    }
+
+    @BuildStep
+    RuntimeInitializedPackageBuildItem kqueueRuntimeInit() {
+        // On macOS, build-time init stores KQueue.isAvailable() == true in the image, but the kqueue
+        // library is not in the image. The executable then fails at runtime with UnsatisfiedLinkError.
+        // Runtime init makes the check run at startup, where it fails and the SDK uses NIO.
+        return new RuntimeInitializedPackageBuildItem(
+                "com.couchbase.client.core.deps.io.netty.channel.kqueue");
+    }
+
+    @BuildStep
+    NativeImageResourceBuildItem epollNativeLib() {
+        // The SDK relocates the condition in the epoll resource-config.json but not the file pattern,
+        // which still names the unshaded library. Without this the shaded library is not in the image
+        // and Linux silently falls back to NIO.
+        return new NativeImageResourceBuildItem(
+                "META-INF/native/libcom_couchbase_client_core_deps_netty_transport_native_epoll_x86_64.so",
+                "META-INF/native/libcom_couchbase_client_core_deps_netty_transport_native_epoll_aarch_64.so");
+    }
+
+    @BuildStep
+    NativeImageFeatureBuildItem registerNettyForeignCleanerFeature() {
+        // Registers the FFM descriptors for the runtime-init CleanerJava24Linker above.
+        return new NativeImageFeatureBuildItem(
+                "com.couchbase.quarkus.extension.runtime.graal.NettyForeignCleanerFeature");
     }
 
     @BuildStep
