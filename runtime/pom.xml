@@ -60,8 +60,8 @@
     <plugins>
       <plugin>
         <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-bootstrap-maven-plugin</artifactId>
-        <version>2.16.12.Final</version>
+        <artifactId>quarkus-extension-maven-plugin</artifactId>
+        <version>${quarkus.version}</version>
         <executions>
           <execution>
             <phase>compile</phase>
