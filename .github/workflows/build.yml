@@ -50,6 +50,7 @@ jobs:
   native:
     name: Native integration tests
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
@@ -62,6 +63,6 @@ jobs:
       - name: Install the extension
         run: mvn -B install -DskipTests --file pom.xml
 
-      # The native executable is built in the Mandrel builder container, then the tests run against it.
+      # Build the executable in the Mandrel builder container.
       - name: Run the integration tests on a native executable
         run: mvn -B verify -pl integration-tests -Dnative -Dquarkus.native.container-build=true -Dnative.surefire.skip=true
