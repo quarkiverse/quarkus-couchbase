@@ -17,6 +17,7 @@ package com.couchbase.quarkus.extension.it;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.startsWith;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,5 +33,15 @@ public class CouchbaseQuarkusExtensionResourceTest {
                 .then()
                 .statusCode(200)
                 .body(is("Hello couchbase-quarkus-extension"));
+    }
+
+    // In native mode this also proves that the SDK KV proxy for the publish-on scheduler works.
+    @Test
+    public void reactiveKvPublishesOnCustomScheduler() {
+        given()
+                .when().get("/couchbase-quarkus-extension/reactiveKvThread")
+                .then()
+                .statusCode(200)
+                .body(startsWith("couchbase-it-publish"));
     }
 }

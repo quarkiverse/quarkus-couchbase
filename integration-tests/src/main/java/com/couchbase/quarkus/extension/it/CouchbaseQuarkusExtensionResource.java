@@ -57,6 +57,16 @@ public class CouchbaseQuarkusExtensionResource {
     }
 
     @GET
+    @Path("/reactiveKvThread")
+    public String reactiveKvThread() {
+        var collection = bucket.reactive().defaultCollection();
+        return collection.upsert("QuarkusReactiveTestDoc", "test success")
+                .flatMap(mutationResult -> collection.get("QuarkusReactiveTestDoc"))
+                .map(getResult -> Thread.currentThread().getName())
+                .block();
+    }
+
+    @GET
     @Path("/bucketCheck")
     public String bucketCheck() {
         return bucket.name();
