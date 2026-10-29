@@ -27,6 +27,7 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.metrics.micrometer.MicrometerMeter;
+import com.couchbase.quarkus.extension.ClusterEnvironmentCustomizer;
 
 import io.micrometer.core.instrument.Metrics;
 import io.quarkus.arc.Arc;

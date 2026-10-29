@@ -32,7 +32,7 @@ import org.junit.jupiter.api.extension.RegisterExtension;
 
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.env.ClusterEnvironment;
-import com.couchbase.quarkus.extension.runtime.ClusterEnvironmentCustomizer;
+import com.couchbase.quarkus.extension.ClusterEnvironmentCustomizer;
 
 import io.quarkus.test.QuarkusUnitTest;
 import reactor.core.scheduler.Scheduler;

@@ -19,7 +19,7 @@ import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 
 import com.couchbase.client.java.env.ClusterEnvironment;
-import com.couchbase.quarkus.extension.runtime.ClusterEnvironmentCustomizer;
+import com.couchbase.quarkus.extension.ClusterEnvironmentCustomizer;
 
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
