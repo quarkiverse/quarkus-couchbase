@@ -86,6 +86,28 @@ public class TestCouchbaseResource {
 
 And test it at http://localhost:8080/couchbase/test.
 
+== Customizing the Cluster environment
+
+To set a `ClusterEnvironment` option that has no `quarkus.couchbase.*` property, declare a CDI bean that implements `ClusterEnvironmentCustomizer`.
+The extension calls it after it applies the properties, so a customizer can also override them.
+
+This example makes the Reactive API publish results on an application scheduler.
+
+[source,java]
+----
+@Singleton
+public class PublishOnCustomizer implements ClusterEnvironmentCustomizer {
+    private static final Scheduler SCHEDULER = Schedulers.newBoundedElastic(4, 1000, "my-app");
+
+    @Override
+    public void customize(ClusterEnvironment.Builder builder) {
+        builder.publishOnScheduler(() -> SCHEDULER);
+    }
+}
+----
+
+If there are several customizers, they run in ascending `@jakarta.annotation.Priority` order. A customizer without `@Priority` has priority 0.
+
 == Dev Services
 
 DevServices (Couchbase TestContainers) activate when `quarkus.devservices.enabled` is `true` and no `quarkus.couchbase.connection-string` is set.

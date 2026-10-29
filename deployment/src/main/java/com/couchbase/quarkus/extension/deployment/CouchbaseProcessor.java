@@ -28,10 +28,12 @@ import com.couchbase.client.core.api.kv.CoreKvBinaryOps;
 import com.couchbase.client.core.api.kv.CoreKvOps;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.quarkus.extension.runtime.ClusterEnvironmentCustomizer;
 import com.couchbase.quarkus.extension.runtime.CouchbaseBuildTimeConfig;
 import com.couchbase.quarkus.extension.runtime.CouchbaseRecorder;
 
 import io.quarkus.arc.deployment.SyntheticBeanBuildItem;
+import io.quarkus.arc.deployment.UnremovableBeanBuildItem;
 import io.quarkus.deployment.annotations.BuildProducer;
 import io.quarkus.deployment.annotations.BuildStep;
 import io.quarkus.deployment.annotations.ExecutionTime;
@@ -66,6 +68,12 @@ public class CouchbaseProcessor {
                 .supplier(recorder.getCluster(metricsEnabled))
                 .setRuntimeInit()
                 .done());
+    }
+
+    // The Cluster supplier looks up customizers at runtime, so Arc sees no injection point for them.
+    @BuildStep
+    UnremovableBeanBuildItem keepClusterEnvironmentCustomizers() {
+        return UnremovableBeanBuildItem.beanTypes(ClusterEnvironmentCustomizer.class);
     }
 
     @BuildStep

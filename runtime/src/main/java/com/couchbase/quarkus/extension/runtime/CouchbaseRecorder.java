@@ -18,6 +18,7 @@ package com.couchbase.quarkus.extension.runtime;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -28,6 +29,8 @@ import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.metrics.micrometer.MicrometerMeter;
 
 import io.micrometer.core.instrument.Metrics;
+import io.quarkus.arc.Arc;
+import io.quarkus.arc.InstanceHandle;
 import io.quarkus.arc.SyntheticCreationalContext;
 import io.quarkus.runtime.RuntimeValue;
 import io.quarkus.runtime.annotations.Recorder;
@@ -94,5 +97,15 @@ public class CouchbaseRecorder {
             var parsedCiphers = Arrays.asList(c.ciphers().get().split(","));
             env.securityConfig().ciphers(parsedCiphers);
         }
+
+        applyCustomizers(env);
+    }
+
+    // The sort is stable, so customizers with the same priority keep the order that Arc returns.
+    private static void applyCustomizers(ClusterEnvironment.Builder env) {
+        Arc.container().select(ClusterEnvironmentCustomizer.class).handlesStream()
+                .sorted(Comparator.comparingInt(handle -> handle.getBean().getPriority()))
+                .map(InstanceHandle::get)
+                .forEach(customizer -> customizer.customize(env));
     }
 }
