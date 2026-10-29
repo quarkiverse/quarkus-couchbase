@@ -22,8 +22,10 @@ import com.couchbase.client.java.env.ClusterEnvironment;
  * <p>
  * Declare one or more CDI beans that implement this interface. The extension applies them after the
  * {@code quarkus.couchbase.*} properties, so a customizer can override those values.
- * Customizers run in ascending {@code jakarta.annotation.Priority} order. A customizer without
- * {@code @Priority} has priority 0.
+ * Customizers run in ascending {@code jakarta.annotation.Priority} order, so a customizer with a higher
+ * priority runs later and its values win. A customizer without {@code @Priority} has priority 0.
+ * Use {@code @Singleton} or {@code @ApplicationScoped} if the customizer owns resources, because a
+ * {@code @Dependent} customizer is never destroyed.
  *
  * <pre>
  * &#64;Singleton
@@ -33,6 +35,11 @@ import com.couchbase.client.java.env.ClusterEnvironment;
  *     &#64;Override
  *     public void customize(ClusterEnvironment.Builder builder) {
  *         builder.publishOnScheduler(() -&gt; scheduler);
+ *     }
+ *
+ *     &#64;PreDestroy
+ *     void dispose() {
+ *         scheduler.dispose();
  *     }
  * }
  * </pre>

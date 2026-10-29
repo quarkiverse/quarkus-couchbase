@@ -39,9 +39,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 /**
- * Verifies that {@link ClusterEnvironmentCustomizer} beans change the environment of the injected
- * {@code Cluster}. The SDK connects in the background, so no Couchbase server is needed and
- * DevServices stays off.
+ * The SDK connects in the background, so no Couchbase server is needed and Dev Services stays off.
  */
 public class ClusterEnvironmentCustomizerTest {
 
@@ -55,7 +53,8 @@ public class ClusterEnvironmentCustomizerTest {
             .overrideConfigKey("quarkus.devservices.enabled", "false")
             .overrideConfigKey("quarkus.couchbase.connection-string", "localhost")
             .overrideConfigKey("quarkus.couchbase.username", "test")
-            .overrideConfigKey("quarkus.couchbase.password", "test");
+            .overrideConfigKey("quarkus.couchbase.password", "test")
+            .overrideConfigKey("quarkus.couchbase.preferredServerGroup", "from-property");
 
     @Inject
     Cluster cluster;
@@ -63,6 +62,11 @@ public class ClusterEnvironmentCustomizerTest {
     @Test
     void customizerSetsPublishOnScheduler() {
         assertSame(SCHEDULER, cluster.environment().userScheduler());
+    }
+
+    @Test
+    void customizerOverridesProperty() {
+        assertEquals("from-customizer", cluster.environment().preferredServerGroup());
     }
 
     // The names sort against the priorities, so this fails if Arc order or descending order wins.
@@ -76,6 +80,7 @@ public class ClusterEnvironmentCustomizerTest {
         @Override
         public void customize(ClusterEnvironment.Builder builder) {
             builder.publishOnScheduler(SCHEDULER);
+            builder.preferredServerGroup("from-customizer");
         }
     }
 

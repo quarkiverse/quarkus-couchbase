@@ -101,7 +101,6 @@ public class CouchbaseRecorder {
         applyCustomizers(env);
     }
 
-    // The sort is stable, so customizers with the same priority keep the order that Arc returns.
     private static void applyCustomizers(ClusterEnvironment.Builder env) {
         Arc.container().select(ClusterEnvironmentCustomizer.class).handlesStream()
                 .sorted(Comparator.comparingInt(handle -> handle.getBean().getPriority()))
