@@ -28,14 +28,17 @@ import com.couchbase.client.java.env.ClusterEnvironment;
  * <pre>
  * &#64;Singleton
  * public class PublishOnCustomizer implements ClusterEnvironmentCustomizer {
- *     private static final Scheduler SCHEDULER = Schedulers.newBoundedElastic(4, 1000, "my-app");
+ *     private final Scheduler scheduler = Schedulers.newBoundedElastic(4, 1000, "my-app");
  *
  *     &#64;Override
  *     public void customize(ClusterEnvironment.Builder builder) {
- *         builder.publishOnScheduler(() -&gt; SCHEDULER);
+ *         builder.publishOnScheduler(() -&gt; scheduler);
  *     }
  * }
  * </pre>
+ * <p>
+ * Do not create the scheduler in a {@code static} field. A native build initializes classes at build
+ * time, so it would start the scheduler threads during the build, and the build fails.
  */
 public interface ClusterEnvironmentCustomizer {
 

@@ -97,14 +97,22 @@ This example makes the Reactive API publish results on an application scheduler.
 ----
 @Singleton
 public class PublishOnCustomizer implements ClusterEnvironmentCustomizer {
-    private static final Scheduler SCHEDULER = Schedulers.newBoundedElastic(4, 1000, "my-app");
+    private final Scheduler scheduler = Schedulers.newBoundedElastic(4, 1000, "my-app");
 
     @Override
     public void customize(ClusterEnvironment.Builder builder) {
-        builder.publishOnScheduler(() -> SCHEDULER);
+        builder.publishOnScheduler(() -> scheduler);
+    }
+
+    @PreDestroy
+    void dispose() {
+        scheduler.dispose();
     }
 }
 ----
+
+Create the scheduler in an instance field or in a method, not in a `static` field.
+A native build initializes classes at build time, so a scheduler in a static field starts its threads during the build, and the build fails.
 
 If there are several customizers, they run in ascending `@jakarta.annotation.Priority` order. A customizer without `@Priority` has priority 0.
 
