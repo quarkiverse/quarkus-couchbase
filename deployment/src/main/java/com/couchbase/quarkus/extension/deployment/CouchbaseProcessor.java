@@ -28,7 +28,7 @@ import com.couchbase.client.core.api.kv.CoreKvBinaryOps;
 import com.couchbase.client.core.api.kv.CoreKvOps;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
-import com.couchbase.quarkus.extension.runtime.ClusterEnvironmentCustomizer;
+import com.couchbase.quarkus.extension.ClusterEnvironmentCustomizer;
 import com.couchbase.quarkus.extension.runtime.CouchbaseBuildTimeConfig;
 import com.couchbase.quarkus.extension.runtime.CouchbaseRecorder;
 
