@@ -101,6 +101,8 @@ public class CouchbaseDevService {
                 .filter(name -> !name.isBlank());
         QuarkusCouchbaseContainer couchbase = new QuarkusCouchbaseContainer(buildTimeConfig.version(), username, password,
                 buildTimeConfig.useDynamicPorts(), bucketName);
+        // Index creation can fail while the new server is still rebalancing. A fresh container usually starts fine.
+        couchbase.withStartupAttempts(3);
         couchbase.start();
         return couchbase;
     }
