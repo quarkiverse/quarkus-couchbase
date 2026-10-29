@@ -15,6 +15,7 @@
  */
 package com.couchbase.quarkus.extension.it;
 
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
 
 import com.couchbase.client.java.env.ClusterEnvironment;
@@ -28,10 +29,16 @@ public class PublishOnSchedulerCustomizer implements ClusterEnvironmentCustomize
 
     static final String THREAD_PREFIX = "couchbase-it-publish";
 
-    private static final Scheduler SCHEDULER = Schedulers.newBoundedElastic(4, 1000, THREAD_PREFIX);
+    // An instance field, so the scheduler and its threads start at runtime and not during a native build.
+    private final Scheduler scheduler = Schedulers.newBoundedElastic(4, 1000, THREAD_PREFIX);
 
     @Override
     public void customize(ClusterEnvironment.Builder builder) {
-        builder.publishOnScheduler(() -> SCHEDULER);
+        builder.publishOnScheduler(() -> scheduler);
+    }
+
+    @PreDestroy
+    void dispose() {
+        scheduler.dispose();
     }
 }
