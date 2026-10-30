@@ -16,11 +16,17 @@
 */
 package com.couchbase.quarkus.extension.it;
 
+import static com.couchbase.client.java.diagnostics.WaitUntilReadyOptions.waitUntilReadyOptions;
+
+import java.time.Duration;
+import java.util.Set;
+
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
+import com.couchbase.client.core.service.ServiceType;
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
 
@@ -50,6 +56,7 @@ public class CouchbaseQuarkusExtensionResource {
     @GET
     @Path("/kvCheck")
     public String kvCheck() {
+        waitForKv();
         var collection = bucket.scope("_default").collection("_default");
         collection.upsert("QuarkusTestDoc", "test success");
         var getResult = collection.get("QuarkusTestDoc");
@@ -59,11 +66,17 @@ public class CouchbaseQuarkusExtensionResource {
     @GET
     @Path("/reactiveKvThread")
     public String reactiveKvThread() {
+        waitForKv();
         var collection = bucket.reactive().defaultCollection();
         return collection.upsert("QuarkusReactiveTestDoc", "test success")
                 .flatMap(mutationResult -> collection.get("QuarkusReactiveTestDoc"))
                 .map(getResult -> Thread.currentThread().getName())
                 .block();
+    }
+
+    // A native app starts faster than the SDK opens the bucket, so the first KV operation can time out.
+    private void waitForKv() {
+        bucket.waitUntilReady(Duration.ofSeconds(30), waitUntilReadyOptions().serviceTypes(Set.of(ServiceType.KV)));
     }
 
     @GET
