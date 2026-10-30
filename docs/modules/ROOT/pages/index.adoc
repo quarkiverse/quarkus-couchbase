@@ -12,7 +12,7 @@ Integrates Couchbase into Quarkus.
 
 This extension currently supports:
 
-- Dependency injecting a Couchbase `Cluster`.
+- Dependency injecting a Couchbase `Cluster` and `Bucket`.
 - Configuring the Cluster through `application.properties`. Currently, a minimal set of configuration options is provided.
 - GraalVM/Mandrel/native-image.
 - KV, Query, Transactions, Analytics, Search and Management operations.
@@ -20,17 +20,19 @@ This extension currently supports:
 - SmallRye Health checks (Readiness) using `quarkus-smallrye-health`
 - Dev Services (starts a Couchbase TestContainer, re-usable across tests)
 
-Please try it out and provide feedback, ideas and bug reports xref:https://github.com/quarkiverse/quarkus-couchbase/issues[on Github].
+Please try it out and provide feedback, ideas and bug reports https://github.com/quarkiverse/quarkus-couchbase/issues[on GitHub].
 
 == Usage
+Since version 1.5.0, the extension requires Quarkus 3.40 or later.
+
 Add it to your project:
 
-[source]
+[source,xml,subs="attributes+"]
 ----
 <dependency>
   <groupId>io.quarkiverse.couchbase</groupId>
   <artifactId>quarkus-couchbase</artifactId>
-  <version>{latest-version}</version>
+  <version>{project-version}</version>
 </dependency>
 ----
 
@@ -86,9 +88,11 @@ public class TestCouchbaseResource {
 
 And test it at http://localhost:8080/couchbase/test.
 
+[#customizing-the-cluster-environment]
 == Customizing the Cluster environment
 
-To set a `ClusterEnvironment` option that has no `quarkus.couchbase.*` property, declare a CDI bean that implements `ClusterEnvironmentCustomizer`.
+To set a `ClusterEnvironment` option that has no `quarkus.couchbase.*` property, declare a CDI bean that implements `com.couchbase.quarkus.extension.ClusterEnvironmentCustomizer`.
+This interface is available since version 1.5.0.
 The extension calls it after it applies the properties, so a customizer can also override them.
 
 This example makes the Reactive API publish results on an application scheduler.
@@ -124,18 +128,16 @@ DevServices (Couchbase TestContainers) activate when `quarkus.devservices.enable
 
 Setting `quarkus.couchbase.connection-string` (for example to point at a real cluster or Capella) disables DevServices.
 
+If the container fails to start, DevServices tries again, up to 3 attempts in total.
+
 == Micrometer Metrics
 
+The extension already includes the Couchbase `metrics-micrometer` module.
 You can enable Micrometer metrics by adding the following dependencies to your application:
 
 [source]
 ----
-# Add Quarkus and Couchbase micrometer dependencies
-<dependency>
-    <groupId>com.couchbase.client</groupId>
-    <artifactId>metrics-micrometer</artifactId>
-    <version>3.10.1</version>
-</dependency>
+# Add the Quarkus micrometer dependency
 <dependency>
     <groupId>io.quarkus</groupId>
     <artifactId>quarkus-micrometer</artifactId>

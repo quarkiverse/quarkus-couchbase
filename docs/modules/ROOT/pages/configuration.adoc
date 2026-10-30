@@ -3,6 +3,7 @@
 Full details can be found in the https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseBuildTimeConfig.html[CouchbaseBuildTimeConfig API Reference] (dev-services, health, metrics enablement) and the https://javadoc.io/doc/io.quarkiverse.couchbase/quarkus-couchbase/latest/com/couchbase/quarkus/extension/runtime/CouchbaseRuntimeConfig.html[CouchbaseRuntimeConfig API Reference] (connection, credentials, TLS, runtime tuning).
 
 Currently, a minimal set of configuration options for the `Cluster` bean is provided.
+To set other `ClusterEnvironment` options, use a xref:index.adoc#customizing-the-cluster-environment[`ClusterEnvironmentCustomizer`].
 
 ====
 Configuration options fall into two categories that differ in *when* they take effect:
@@ -32,7 +33,7 @@ These config items do not default to placeholder values, and are required to be 
 ** *Note*: Not required when DevServices starts a container, injected to `Administrator`.
 * `quarkus.couchbase.password`
 ** *String*: The password to authenticate with.
-** *Note*: Not required when DevServices starts a container injected to `password`.
+** *Note*: Not required when DevServices starts a container, injected to `password`.
 
 == Optional
 These config items have default values, but can be overridden in `application.properties`.
@@ -41,7 +42,7 @@ These config items have default values, but can be overridden in `application.pr
 ** *Boolean*: Whether to use dynamic ports for DevServices. When `true`, TestContainers will use random available ports. When `false`, fixed ports are used (container ports mapped to same host ports).
 ** *Default*: `false` (fixed ports mode)
 * `quarkus.couchbase.devservices.version` _(build-time)_
-** *String*: The version of the Couchbase server to use for DevServices. See https://hub.docker.com/_/couchbase[Docker Hub] for available versions.
+** *String*: The version of the Couchbase server to use for DevServices. See https://hub.docker.com/r/couchbase/server[Docker Hub] for available versions.
 ** *Default*: `latest`
 * `quarkus.couchbase.metrics.enabled` _(build-time)_
 ** *Boolean*: Enable or disable Micrometer metrics.
